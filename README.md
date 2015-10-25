@@ -1,6 +1,5 @@
 # felt
-Front end load testing with PhantomJS/SlimerJS
-Developed by CoScale (http://www.coscale.com)
+Front end load testing with PhantomJS/SlimerJS, developed by CoScale (http://www.coscale.com)
 <img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo" />
 
 ## Description
