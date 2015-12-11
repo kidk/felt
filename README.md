@@ -14,7 +14,7 @@ Front end load testing with PhantomJS/SlimerJS, developed by CoScale (http://www
 ## Quick start
 
 1. Download latest version
-2. `python main.py examples/google.json`
+2. `python main.py --url=examples/google.json`
 
 ## Authors / Contributors
 
