@@ -3,63 +3,41 @@ var page = require('webpage').create();
 var system = require('system');
 var fs = require('fs');
 
+scenario = {
+    // Debug mode
+    debug: false,
 
-
-/*
-    Global vars
-*/
-
-// Url to open
-var url = '';
-
-// Location of temporary directory
-var dir = '';
-
-// Number of requests done
-var requests = 0;
-
-// Debug mode enable
-var debug = false;
-
-// Debug mode enable
-var verbose = true;
+    // Verbose mode
+    verbose: false
+}
 
 /*
     Parse commandline arguments
 */
-
-for(var a = 1; a < system.args.length; a++) {
-    arg = system.args[a].split("=");
-    switch(arg[0]) {
-        case '--url':
-            url = arg[1];
-        break;
-        case '--debug':
-            debug = arg[1];
-        break;
-        case '--verbose':
-            verbose = arg[1];
-        break;
-    }
+arguments = JSON.parse(system.args[1]);
+for (var id in arguments) {
+    scenario[id] = arguments[id];
 }
 
+// Number of requests done
+var requests = 0;
 
 /*
     Browser callbacks
 */
 
 page.onError = function(msg, trace) {
-    if (debug) {
+    if (scenario['debug']) {
         console.error('onError: ' + msg + "\n" + JSON.stringify(trace));
     }
 };
 
 page.onResourceRequested = function(requestData, networkRequest) {
-    if (debug) {
+    if (scenario['debug']) {
         console.error('onResourceRequested: \n' + JSON.stringify(requestData, networkRequest));
     }
 
-    if (verbose) {
+    if (scenario['verbose']) {
         console.log('onResourceRequested: ' + requestData.url);
     }
 
@@ -71,21 +49,21 @@ page.onResourceRequested = function(requestData, networkRequest) {
 };
 
 page.onResourceReceived = function(response) {
-    if (debug) {
+    if (scenario['debug']) {
         console.error('onResourceReceived: \n' + JSON.stringify(response));
     }
     resources[response.id].status = 'done';
 };
 
 page.onResourceError = function(resourceError) {
-    if (debug) {
+    if (scenario['debug']) {
         console.error('onResourceError: \n' + JSON.stringify(resourceError));
     }
     resources[response.id].status = 'error';
 };
 
 page.onResourceTimeout = function(request) {
-    if (debug) {
+    if (scenario['debug']) {
         console.error('onResourceTimeout: \n' + JSON.stringify(request));
     }
     resources[request.id].status = 'timeout';
@@ -144,23 +122,23 @@ function loadpage() {
     // Save load start time
     t = Date.now();
 
-    if (verbose) {
-        console.log('loading page: ' + url);
+    if (scenario['verbose']) {
+        console.log('loading page: ' + scenario['url']);
     }
 
-    page.open(url, function (status) {
+    page.open(scenario['url'], function (status) {
         pageReady = true;
-
         if (status !== 'success') {
             loadpage();
         } else {
             e = Date.now();
             results.push({
-                'url': url,
-                'start': t,
-                'end': e,
-                'time': e - t
+                "url": scenario['url'],
+                "start": t,
+                "end": e,
+                "time": e - t
             });
+
         }
     });
 }
