@@ -1,15 +1,19 @@
+#!/usr/bin/env python
+
 import argparse
 import subprocess
 import sys
-from Queue import Queue, Empty
-
 import time
+from Queue import Queue, Empty
 from threading import Thread
 
-__author__ = 'CoScale - Samuel Vandamme (samuel@sava.be) '
+__license__ = "MIT"
+__maintainer__ = "Samuel Vandamme"
+__email__ = "samuel@sava.be"
+__author__ = "Samuel Vandamme"
+__credits__ = ["Stijn Polfliet", "Samuel Vandamme"]
 
 threadQueue = Queue()
-
 
 def main(args):
     """ The main function parses the command line arguments, reads the input file and starts the
