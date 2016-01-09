@@ -18,6 +18,11 @@ Felt is a front-end load tester. It works by running a lot of browser instances 
 1. `cd felt`
 1. Download PhantomJS from http://phantomjs.org/download.html
 1. Unzip and move PhantomJS executable into felt directory
+
+    The felt directory should look something like this:
+        $ ls
+        LICENSE		README.md	js		main.py		phantomjs
+
 1. `python main.py --url=www.google.com`
 
 ## Usage
