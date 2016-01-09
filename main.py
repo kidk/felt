@@ -95,7 +95,7 @@ class WebworkerService:
 
 
 def execute(scenario):
-    command = ['./phantomjs', 'js/worker.js', json.dumps(scenario)];
+    command = ['./phantomjs', 'worker.js', json.dumps(scenario)];
     process = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     while True:
         nextline = process.stdout.readline()
