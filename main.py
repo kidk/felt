@@ -24,14 +24,13 @@ def main(args):
 
     # Parse arguments
     parser = argparse.ArgumentParser(description='Start workload.')
-    parser.add_argument('-u', '--url', type=str, required=True,
-                        help="url to open until halted")
     parser.add_argument('--debug', action='store_true',
                         help="enable debug information")
     parser.add_argument('--verbose', action='store_true',
                         help="makes generator more verbose")
     parser.add_argument('--threads', type=int, default=5,
-                        help="number of threads to run")
+                        help="number of threads to run simultaneously")
+    parser.add_argument('scenario')
     args = parser.parse_args()
 
     # Check if PhantomJS is available
@@ -39,12 +38,17 @@ def main(args):
         print "PhantomJS not found"
         return
 
-    # Prepare scenario and options
-    scenario = {
-        'url': args.url,
-        'verbose': args.verbose,
-        'debug': args.debug
-    }
+    # Check and open scenario
+    if not os.path.isfile(args.scenario):
+        print "scenario '%s' not found" % args.scenario
+        return
+
+    with open(args.scenario, 'r') as content_file:
+        content = content_file.read()
+
+    scenario = json.loads(content);
+
+    # Run options
     options = {
         'threads': args.threads
     }
@@ -90,12 +94,12 @@ class WebworkerService:
             # Start threads
             for x in range(options['threads'] - self.threadcount):
                 self.threadcount += 1
-                Thread(target=execute, args = (scenario, )).start()
+                Thread(target=execute, args = (scenario, options, )).start()
 
 
 
-def execute(scenario):
-    command = ['./phantomjs', 'worker.js', json.dumps(scenario)];
+def execute(scenario, options):
+    command = ['./phantomjs', 'worker.js', json.dumps(scenario), json.dumps(options)];
     process = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     while True:
         nextline = process.stdout.readline()

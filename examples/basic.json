@@ -1,0 +1,14 @@
+[
+    {
+        "action": "open_url",
+        "value": "http://www.sava.be"
+    },
+    {
+        "action": "open_url",
+        "value": "http://www.sava.be/about.html"
+    },
+    {
+        "action": "open_url",
+        "value": "http://www.sava.be/projects.html"
+    }
+]
