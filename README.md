@@ -1,4 +1,4 @@
-# felt
+# felt (alpha)
 Front end load testing with PhantomJS/SlimerJS, sponsored by [CoScale](http://www.coscale.com)
 <img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo" />
 
