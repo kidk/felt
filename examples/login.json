@@ -1,0 +1,24 @@
+[
+    {
+        "action": "open_url",
+        "value": "http://felt.sava.be/"
+    },
+    {
+        "action": "open_url",
+        "value": "http://felt.sava.be/login.php"
+    },
+    {
+        "action": "set_value",
+        "selector": "input[name=username]",
+        "value": "felt"
+    },
+    {
+        "action": "set_value",
+        "selector": "input[name=password]",
+        "value": "isAWESOME"
+    },
+    {
+        "action": "submit",
+        "selector": "#loginForm"
+    }
+]

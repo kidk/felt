@@ -15,7 +15,7 @@ options = {
 // Run statistics
 var requests = 0;
 var results = [];
-
+var requestUrl;
 
 /*
     Parse commandline arguments
@@ -84,6 +84,12 @@ function nextAction() {
         case 'open_url':
             loadpage(current.value);
         break;
+        case 'set_value':
+            set_value(current.selector, current.value);
+        break;
+        case 'submit':
+            submit(current.selector);
+        break;
         default:
             output('unknown action: ' + JSON.stringify(current));
     }
@@ -91,35 +97,24 @@ function nextAction() {
     action++;
 }
 
+// Set a value inside webpage
+function set_value(selector, value) {
+    page.evaluate(function (selector, value) {
+        document.querySelector(selector).value = value;
+    }, selector, value);
+}
+
+// Submit form
+function submit(selector) {
+    page.evaluate(function (selector) {
+        document.querySelector(selector).submit();
+    }, selector);
+}
+
 // Loads the next page
 function loadpage(url) {
-    // Increase requests
-    requests += 1;
-
-    // Reset checkReady()
-    pageReady = false;
-    resources = [];
-
-    // Save load start time
-    t = Date.now();
-
-    debug('loading page: ' + url);
-
-    page.open(url, function (status) {
-        pageReady = true;
-        if (status !== 'success') {
-            loadpage();
-        } else {
-            e = Date.now();
-            results.push({
-                "url": url,
-                "start": t,
-                "end": e,
-                "time": e - t
-            });
-
-        }
-    });
+    requestUrl = url;
+    page.open(url);
 }
 
 /*
@@ -132,13 +127,13 @@ nextAction()
 */
 function output(message) {
     if (options['verbose']) {
-        console.log(pad(uid) + ":\t" + message);
+        console.log(pad(uid) + "\t" + Date.now() + ":\t" + message);
     }
 }
 
 function debug(message) {
     if (options['debug']) {
-        console.error(pad(uid) + ":\t" + message);
+        console.error(pad(uid) + "\t" + Date.now() + ":\t" + message);
     }
 }
 
@@ -181,4 +176,41 @@ page.onResourceTimeout = function(request) {
     debug('onResourceTimeout: \n' + JSON.stringify(request));
 
     resources[request.id].status = 'timeout';
+};
+
+page.onUrlChanged = function(targetUrl) {
+    debug('onUrlChanged: \n TargetUrl: ' + targetUrl);
+};
+
+var t;
+page.onLoadStarted = function() {
+    debug('onLoadStarted');
+
+    // Increase requests
+    requests += 1;
+
+    // Reset checkReady()
+    pageReady = false;
+    resources = [];
+
+    // Save load start time
+    t = Date.now();
+};
+
+page.onLoadFinished = function(status) {
+    debug('onLoadFinished: \n Status: ' + status);
+
+    pageReady = true;
+    if (status !== 'success') {
+        loadpage();
+    } else {
+        e = Date.now();
+        results.push({
+            "url": requestUrl,
+            "start": t,
+            "end": e,
+            "time": e - t
+        });
+
+    }
 };
