@@ -20,8 +20,9 @@ var results = [];
 /*
     Parse commandline arguments
 */
-scenario = JSON.parse(system.args[1]);
-arguments = JSON.parse(system.args[2]);
+uid = JSON.parse(system.args[1]);
+scenario = JSON.parse(system.args[2]);
+arguments = JSON.parse(system.args[3]);
 for (var id in arguments) {
     options[id] = arguments[id];
 }
@@ -78,13 +79,13 @@ function nextAction() {
         exit();
     }
 
-    console.log(JSON.stringify(current));
+    output(JSON.stringify(current));
     switch(current.action) {
         case 'open_url':
             loadpage(current.value);
         break;
         default:
-            console.log('unknown action: ' + JSON.stringify(current));
+            output('unknown action: ' + JSON.stringify(current));
     }
 
     action++;
@@ -102,9 +103,7 @@ function loadpage(url) {
     // Save load start time
     t = Date.now();
 
-    if (options['verbose']) {
-        console.log('loading page: ' + url);
-    }
+    debug('loading page: ' + url);
 
     page.open(url, function (status) {
         pageReady = true;
@@ -129,22 +128,35 @@ function loadpage(url) {
 nextAction()
 
 /*
+    Helper functions
+*/
+function output(message) {
+    if (options['verbose']) {
+        console.log(pad(uid) + ":\t" + message);
+    }
+}
+
+function debug(message) {
+    if (options['debug']) {
+        console.error(pad(uid) + ":\t" + message);
+    }
+}
+
+// Source [InfinitiesLoop] http://stackoverflow.com/questions/2998784/how-to-output-integers-with-leading-zeros-in-javascript
+function pad(num, size) {
+    var s = "00000" + num;
+    return s.substr(s.length-size);
+}
+
+/*
     Browser callbacks
 */
 page.onError = function(msg, trace) {
-    if (options['debug']) {
-        console.error('onError: ' + msg + "\n" + JSON.stringify(trace));
-    }
+    debug('onError: ' + msg + "\n" + JSON.stringify(trace));
 };
 
 page.onResourceRequested = function(requestData, networkRequest) {
-    if (options['debug']) {
-        console.error('onResourceRequested: \n' + JSON.stringify(requestData, networkRequest));
-    }
-
-    if (options['verbose']) {
-        console.log('onResourceRequested: ' + requestData.url);
-    }
+    debug('onResourceRequested: \n' + JSON.stringify(requestData, networkRequest));
 
     resources[requestData.id] = {
         'method': requestData.method,
@@ -154,22 +166,19 @@ page.onResourceRequested = function(requestData, networkRequest) {
 };
 
 page.onResourceReceived = function(response) {
-    if (options['debug']) {
-        console.error('onResourceReceived: \n' + JSON.stringify(response));
-    }
+    debug('onResourceReceived: \n' + JSON.stringify(response));
+
     resources[response.id].status = 'done';
 };
 
 page.onResourceError = function(resourceError) {
-    if (options['debug']) {
-        console.error('onResourceError: \n' + JSON.stringify(resourceError));
-    }
+    debug('onResourceError: \n' + JSON.stringify(resourceError));
+
     resources[response.id].status = 'error';
 };
 
 page.onResourceTimeout = function(request) {
-    if (options['debug']) {
-        console.error('onResourceTimeout: \n' + JSON.stringify(request));
-    }
+    debug('onResourceTimeout: \n' + JSON.stringify(request));
+
     resources[request.id].status = 'timeout';
 };

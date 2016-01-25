@@ -50,18 +50,21 @@ def main(args):
 
     # Run options
     options = {
-        'threads': args.threads
+        'threads': args.threads,
+        'verbose': args.verbose,
+        'debug': args.debug
     }
 
     # Output information
-    print "################################"
-    print "\tFelt (%s)" % __version__
-    print "################################"
-    print
-    print " Scenario:", scenario
-    print " Options", options
-    print
-    print "################################"
+    if options['verbose']:
+        print "################################"
+        print "\tFelt (%s)" % __version__
+        print "################################"
+        print
+        print " Scenario:", scenario
+        print " Options", options
+        print
+        print "################################"
 
     # Start worker
     worker = WebworkerService()
@@ -71,6 +74,7 @@ def main(args):
 class WebworkerService:
     def run(self, scenario, options):
         self.threadcount = 0
+        self.threadstarted = 0
 
         # Start new one every minute
         while True:
@@ -94,12 +98,13 @@ class WebworkerService:
             # Start threads
             for x in range(options['threads'] - self.threadcount):
                 self.threadcount += 1
-                Thread(target=execute, args = (scenario, options, )).start()
+                self.threadstarted += 1
+                Thread(target=execute, args = (self.threadstarted, scenario, options, )).start()
 
 
 
-def execute(scenario, options):
-    command = ['./phantomjs', 'worker.js', json.dumps(scenario), json.dumps(options)];
+def execute(threadId, scenario, options):
+    command = ['./phantomjs', 'worker.js', str(threadId), json.dumps(scenario), json.dumps(options)];
     process = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     while True:
         nextline = process.stdout.readline()
