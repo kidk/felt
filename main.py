@@ -31,7 +31,7 @@ def main(args):
     parser.add_argument('--threads', type=int, default=5,
                         help="number of threads to run simultaneously")
     parser.add_argument('--test', action='store_true',
-                        help="used to run a scenario once")
+                        help="run a scenario only once")
     parser.add_argument('scenario')
     args = parser.parse_args()
 

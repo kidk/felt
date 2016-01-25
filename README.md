@@ -3,14 +3,22 @@ Front end load testing with PhantomJS/SlimerJS, sponsored by [CoScale](http://ww
 <img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo" />
 
 ## Description
-Felt is a front-end load tester. It works by running a lot of browser instances and waiting for the entire page to finish loading (no more running resource calls). It achieves this by using PhantomJS or SlimerJS.
+Felt is a front-end load tester. It generates load by running a lot of browser instances simultaneously and waiting for the page to finish loading (no more pending resource calls). The tool uses [PhantomJS](http://phantomjs.org/) or [SlimerJS **(TODO)**](https://slimerjs.org/). You can use Felt to quickly generate load on an application. With the scenarios you can setup a path through your application for the browsers to follow.
 
 ## Features
 
 * Real browser load testing of web applications
-* Works with PhantomJS (webkit) and SlimerJS (firefox)
+* Works with PhantomJS (webkit) and SlimerJS (firefox **(TODO)**)
 * Scenarios
-* Performance statistics
+* Performance statistics **(TODO)**
+* Statistics **(TODO)**
+* Multi machine load testing **(TODO)**
+
+## Requirements
+
+* Tested on Python 2.7.10
+* Unix based operating system
+* Local install of PhantomJS
 
 ## Quick start
 
@@ -23,34 +31,28 @@ Felt is a front-end load tester. It works by running a lot of browser instances 
         $ ls
         LICENSE		README.md	js		main.py		phantomjs
 
-1. `python main.py --url=www.google.com`
+1. `python main.py --verbose examples/basic.json`
+1. `ctrl + c` to stop
 
 ## Usage
 ```
-usage: main.py [-h] -u URL [--debug] [--verbose] [--threads THREADS]
+usage: main.py [-h] [--debug] [--verbose] [--threads THREADS] [--test]
+               scenario
 
 Start workload.
 
+positional arguments:
+  scenario
+
 optional arguments:
   -h, --help         show this help message and exit
-  -u URL, --url URL  url to open until halted
   --debug            enable debug information
   --verbose          makes generator more verbose
-  --threads THREADS  number of threads to run
+  --threads THREADS  number of threads to run simultaneously
+  --test             run a scenario only once
 ```
-
-## TODO
-
-- [ ] Scenarios
-  - [ ] Waiting for console.log
-  - [ ] Going through a set of pages
-- [ ] SlimerJS support
-- [ ] Tests
-- [ ] Statistics
-- [ ] Multi machine load testing
 
 ## Authors / Contributors
 
+* [Samuel Vandamme](http://www.sava.be)
 * Stijn Polfliet
-* Samuel Vandamme
-* [CoScale](http://www.coscale.com)
