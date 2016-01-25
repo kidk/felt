@@ -30,6 +30,8 @@ def main(args):
                         help="makes generator more verbose")
     parser.add_argument('--threads', type=int, default=5,
                         help="number of threads to run simultaneously")
+    parser.add_argument('--test', action='store_true',
+                        help="used to run a scenario once")
     parser.add_argument('scenario')
     args = parser.parse_args()
 
@@ -52,8 +54,13 @@ def main(args):
     options = {
         'threads': args.threads,
         'verbose': args.verbose,
-        'debug': args.debug
+        'debug': args.debug,
+        'test': args.test
     }
+
+    # Test option
+    if options['test']:
+        options['threads'] = 1
 
     # Output information
     if options['verbose']:
@@ -75,9 +82,10 @@ class WebworkerService:
     def run(self, scenario, options):
         self.threadcount = 0
         self.threadstarted = 0
+        self.running = True
 
         # Start new one every minute
-        while True:
+        while self.running:
             self.startRun(scenario, options)
 
             # Keep track of running threads
@@ -88,13 +96,18 @@ class WebworkerService:
                     self.threadcount -= 1
 
                     threadQueue.task_done()
+
+                    # Test mode
+                    if options["test"]:
+                        self.running = False
+
             except Empty, e:
                 pass
 
             time.sleep(0.25)
 
     def startRun(self, scenario, options):
-        if (5 > self.threadcount):
+        if (options['threads'] > self.threadcount):
             # Start threads
             for x in range(options['threads'] - self.threadcount):
                 self.threadcount += 1
