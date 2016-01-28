@@ -90,6 +90,9 @@ function nextAction() {
         case 'submit':
             submit(current.selector);
         break;
+        case 'click_one':
+            click_one(current.selector);
+        break;
         default:
             output('unknown action: ' + JSON.stringify(current));
     }
@@ -108,6 +111,16 @@ function set_value(selector, value) {
 function submit(selector) {
     page.evaluate(function (selector) {
         document.querySelector(selector).submit();
+    }, selector);
+}
+
+// Clicks a random element in the list
+function click_one(selector) {
+    page.evaluate(function (selector) {
+        elements = document.querySelectorAll(selector);
+        element = elements[Math.floor(Math.random()*elements.length)];
+
+        element.click();
     }, selector);
 }
 
@@ -180,11 +193,13 @@ page.onResourceTimeout = function(request) {
 
 page.onUrlChanged = function(targetUrl) {
     debug('onUrlChanged: \n TargetUrl: ' + targetUrl);
+
+    requestUrl = targetUrl;
 };
 
 var t;
 page.onLoadStarted = function() {
-    debug('onLoadStarted');
+    debug('onLoadStarted ' + requestUrl);
 
     // Increase requests
     requests += 1;
@@ -198,7 +213,7 @@ page.onLoadStarted = function() {
 };
 
 page.onLoadFinished = function(status) {
-    debug('onLoadFinished: \n Status: ' + status);
+    debug('onLoadFinished ' + requestUrl + ': \n Status: ' + status);
 
     pageReady = true;
     if (status !== 'success') {
