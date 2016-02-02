@@ -1,0 +1,26 @@
+[
+    {
+        "action": "open_url",
+        "value": "http://www.sava.be/"
+    },
+    {
+        "action": "click_one",
+        "selector": "a"
+    },
+    {
+        "action": "click_one",
+        "selector": "a"
+    },
+    {
+        "action": "click_one",
+        "selector": "a"
+    },
+    {
+        "action": "click_one",
+        "selector": "a"
+    },
+    {
+        "action": "click_one",
+        "selector": "a"
+    }
+]
