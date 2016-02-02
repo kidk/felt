@@ -1,7 +1,7 @@
 [
     {
         "action": "open_url",
-        "value": "http://www.sava.be"
+        "value": "http://www.sava.be/"
     },
     {
         "action": "click_one",
