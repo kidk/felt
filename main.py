@@ -32,12 +32,20 @@ def main(args):
                         help="number of threads to run simultaneously")
     parser.add_argument('--test', action='store_true',
                         help="run a scenario only once")
+    parser.add_argument('--slimerjs', action='store_true',
+                        help="use slimerjs instead of phantomjs")
     parser.add_argument('scenario')
     args = parser.parse_args()
 
-    # Check if PhantomJS is available
-    if not os.path.isfile("phantomjs"):
-        print "PhantomJS not found"
+    # Which browser are we using
+    browser = "phantomjs"
+    if args.slimerjs:
+        browser = "slimerjs"
+
+    # Check if browser is available in path
+    browserPath = which(browser)
+    if browserPath is None:
+        print "%s not found" % browser
         return
 
     # Check and open scenario
@@ -52,6 +60,7 @@ def main(args):
 
     # Run options
     options = {
+        'browser': browserPath,
         'threads': args.threads,
         'verbose': args.verbose,
         'debug': args.debug,
@@ -68,8 +77,9 @@ def main(args):
         print "\tFelt (%s)" % __version__
         print "################################"
         print
-        print " Scenario:", scenario
-        print " Options", options
+        print " Browser: ", browser
+        print " Scenario: ", scenario
+        print " Options: ", options
         print
         print "################################"
 
@@ -77,6 +87,27 @@ def main(args):
     worker = WebworkerService()
     worker.run(scenario, options)
 
+# Beginning of StackOverflow code
+# Authors: Jay, Harmv
+# http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
+def which(program):
+    import os
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+
+    return None
+# End of StackOverflow code
 
 class WebworkerService:
     def run(self, scenario, options):
@@ -117,7 +148,8 @@ class WebworkerService:
 
 
 def execute(threadId, scenario, options):
-    command = ['./phantomjs', 'worker.js', str(threadId), json.dumps(scenario), json.dumps(options)];
+    command = [options['browser'], 'worker.js', str(threadId), json.dumps(scenario), json.dumps(options)];
+    print command
     process = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     while True:
         nextline = process.stdout.readline()
