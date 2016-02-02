@@ -198,8 +198,8 @@ page.onUrlChanged = function(targetUrl) {
 };
 
 var t;
-page.onLoadStarted = function() {
-    debug('onLoadStarted ' + requestUrl);
+page.onInitialized = function() {
+    debug('onInitialized ' + requestUrl);
 
     // Increase requests
     requests += 1;
@@ -219,13 +219,16 @@ page.onLoadFinished = function(status) {
     if (status !== 'success') {
         loadpage();
     } else {
-        e = Date.now();
-        results.push({
-            "url": requestUrl,
-            "start": t,
-            "end": e,
-            "time": e - t
-        });
-
+        // Only save results when we know a page was requested, onLoadFinished gets called a lot more then needed
+        if (t > 0) {
+            e = Date.now();
+            results.push({
+                "url": requestUrl,
+                "start": t,
+                "end": e,
+                "time": e - t
+            });
+            t = 0;
+        }
     }
 };
