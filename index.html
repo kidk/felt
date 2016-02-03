@@ -1,50 +1,115 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Felt : Front end load testing">
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Felt</title>
+    <meta charset="UTF-8">
+    <title>Felt by kidk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
-
   <body>
+    <section class="page-header">
+      <h1 class="project-name">Felt</h1>
+      <h2 class="project-tagline">Front end load testing</h2>
+      <a href="https://github.com/kidk/felt" class="btn">View on GitHub</a>
+      <a href="https://github.com/kidk/felt/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/kidk/felt/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/kidk/felt">View on GitHub</a>
+    <section class="main-content">
+      <h1>
+<a id="felt-alpha" class="anchor" href="#felt-alpha" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>felt (alpha)</h1>
 
-          <h1 id="project_title">Felt</h1>
-          <h2 id="project_tagline">Front end load testing</h2>
+<p>Front end load testing with PhantomJS/SlimerJS, sponsored by <a href="http://www.coscale.com">CoScale</a>
+<img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo"></p>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/kidk/felt/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/kidk/felt/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
+<h2>
+<a id="description" class="anchor" href="#description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Description</h2>
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>
-<a id="felt" class="anchor" href="#felt" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Felt</h3>
-      </section>
-    </div>
+<p>Felt is a front-end load tester. It generates load by running a lot of browser instances simultaneously and waiting for the page to finish loading (no more pending resource calls). The tool uses <a href="http://phantomjs.org/">PhantomJS</a> or <a href="https://slimerjs.org/">SlimerJS <strong>(TODO)</strong></a>. You can use Felt to quickly generate load on an application. With the scenarios you can setup a path through your application for the browsers to follow.</p>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Felt maintained by <a href="https://github.com/kidk">kidk</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Real browser load testing of web applications</li>
+<li>Works with PhantomJS (webkit) and SlimerJS (firefox <strong>(TODO)</strong>)</li>
+<li>Scenarios</li>
+<li>Performance statistics <strong>(TODO)</strong>
+</li>
+<li>Statistics <strong>(TODO)</strong>
+</li>
+<li>Multi machine load testing <strong>(TODO)</strong>
+</li>
+</ul>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ul>
+<li>Tested on Python 2.7.10</li>
+<li>Unix based operating system</li>
+<li>Local install of PhantomJS</li>
+</ul>
+
+<h2>
+<a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Quick start</h2>
+
+<ol>
+<li><code>git clone https://github.com/kidk/felt.git</code></li>
+<li><code>cd felt</code></li>
+<li>Download PhantomJS from <a href="http://phantomjs.org/download.html">http://phantomjs.org/download.html</a>
+</li>
+<li>
+<p>Unzip and move PhantomJS executable into felt directory</p>
+
+<p>The felt directory should look something like this:
+    $ ls
+    LICENSE     README.md   js      main.py     phantomjs</p>
+</li>
+<li><p><code>python main.py --verbose examples/basic.json</code></p></li>
+<li>
+<code>ctrl + c</code> to stop</li>
+</ol>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<pre><code>usage: main.py [-h] [--debug] [--verbose] [--threads THREADS] [--test]
+               scenario
+
+Start workload.
+
+positional arguments:
+  scenario
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --debug            enable debug information
+  --verbose          makes generator more verbose
+  --threads THREADS  number of threads to run simultaneously
+  --test             run a scenario only once
+</code></pre>
+
+<h2>
+<a id="authors--contributors" class="anchor" href="#authors--contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors / Contributors</h2>
+
+<ul>
+<li><a href="http://www.sava.be">Samuel Vandamme</a></li>
+<li>Stijn Polfliet</li>
+</ul>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/kidk/felt">Felt</a> is maintained by <a href="https://github.com/kidk">kidk</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
 
-              <script type="text/javascript">
+    </section>
+
+            <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -54,7 +119,6 @@
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
-
 
   </body>
 </html>
