@@ -17,7 +17,7 @@ Felt is a front-end load tester. It generates load by running a lot of browser i
 ## Features
 
 * Real browser load testing of web applications
-* Works with PhantomJS (webkit) and SlimerJS (firefox **(TODO)**)
+* Works with PhantomJS (webkit) and SlimerJS (firefox)
 * Scenarios
 * Performance statistics **(TODO)**
 * Statistics **(TODO)**
@@ -27,7 +27,7 @@ Felt is a front-end load tester. It generates load by running a lot of browser i
 
 * Tested on Python 2.7.10
 * Unix based operating system
-* Local install of PhantomJS or SlimerJS
+* Local install of [PhantomJS](http://phantomjs.org/download.html) or [SlimerJS](https://slimerjs.org/download.html) available in PATH
 
 ## Quick start
 

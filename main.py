@@ -45,7 +45,7 @@ def main(args):
     # Check if browser is available in path
     browserPath = which(browser)
     if browserPath is None:
-        print "%s not found" % browser
+        print "Browser %s not found in your PATH" % browser
         return
 
     # Check and open scenario
@@ -96,6 +96,11 @@ def which(program):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
     fpath, fname = os.path.split(program)
+
+    # Special case if file is in current dir
+    if is_exe(fname):
+        return "./%s" % program
+
     if fpath:
         if is_exe(program):
             return program
@@ -149,7 +154,6 @@ class WebworkerService:
 
 def execute(threadId, scenario, options):
     command = [options['browser'], 'worker.js', str(threadId), json.dumps(scenario), json.dumps(options)];
-    print command
     process = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     while True:
         nextline = process.stdout.readline()
