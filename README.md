@@ -1,9 +1,18 @@
-# felt (alpha)
+# Felt
 Front end load testing with PhantomJS/SlimerJS, sponsored by [CoScale](http://www.coscale.com)
-<img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo" />
 
 ## Description
-Felt is a front-end load tester. It generates load by running a lot of browser instances simultaneously and waiting for the page to finish loading (no more pending resource calls). The tool uses [PhantomJS](http://phantomjs.org/) or [SlimerJS **(TODO)**](https://slimerjs.org/). You can use Felt to quickly generate load on an application. With the scenarios you can setup a path through your application for the browsers to follow.
+Felt is a front-end load tester. It generates load by running a lot of browser instances simultaneously and waiting for the page to finish loading (no more pending resource calls). The tool uses [PhantomJS](http://phantomjs.org/) or [SlimerJS **(TODO)**](https://slimerjs.org/). You can use Felt to quickly generate load on front end heavy applications. With  scenarios you can setup a path through your application for the browsers to follow.
+
+## Use cases
+
+* Load testing
+    * AngularJS
+    * React
+    * Backbone.js
+    * Ember.js
+* Cache warming
+* Quick local load tests
 
 ## Features
 
@@ -18,7 +27,7 @@ Felt is a front-end load tester. It generates load by running a lot of browser i
 
 * Tested on Python 2.7.10
 * Unix based operating system
-* Local install of PhantomJS
+* Local install of PhantomJS or SlimerJS
 
 ## Quick start
 
@@ -56,3 +65,4 @@ optional arguments:
 
 * [Samuel Vandamme](http://www.sava.be)
 * Stijn Polfliet
+<img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo" />
