@@ -21,7 +21,6 @@ var requestUrl;
     Parse commandline arguments
 */
 uid = system.args[1];
-console.log(system.args[2]);
 scenario = JSON.parse(system.args[2]);
 arguments = JSON.parse(system.args[3]);
 for (var id in arguments) {
