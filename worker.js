@@ -90,6 +90,9 @@ function nextAction() {
         case 'submit':
             submit(current.selector);
         break;
+        case 'click':
+            click(current.selector);
+        break;
         case 'click_one':
             click_one(current.selector);
         break;
@@ -111,6 +114,13 @@ function set_value(selector, value) {
 function submit(selector) {
     page.evaluate(function (selector) {
         document.querySelector(selector).submit();
+    }, selector);
+}
+
+// Click element
+function click(selector) {
+    page.evaluate(function (selector) {
+        document.querySelector(selector).click();
     }, selector);
 }
 
