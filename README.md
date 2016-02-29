@@ -28,6 +28,7 @@ Felt is a front-end load tester. It generates load by running a lot of browser i
 * Tested on Python 2.7.10
 * Unix based operating system
 * Local install of [PhantomJS](http://phantomjs.org/download.html) or [SlimerJS](https://slimerjs.org/download.html) available in PATH
+* Install commentjson
 
 ## Quick start
 
@@ -39,7 +40,7 @@ Felt is a front-end load tester. It generates load by running a lot of browser i
     The felt directory should look something like this:
         $ ls
         LICENSE		README.md	js		main.py		phantomjs
-
+1. pip install commentjson
 1. `python main.py --verbose examples/basic.json`
 1. `ctrl + c` to stop
 
