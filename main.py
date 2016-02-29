@@ -211,10 +211,11 @@ def execute(threadId, scenario, options):
 
     return None
 
+
 # Preprocess the scenario json so that tha variables are filled in the steps.
 def preprocessScenario(obj):
     variables = copy.deepcopy(obj['variables'])
-    steps = copy.deepcopy(obj['steps']);
+    steps = copy.deepcopy(obj['steps'])
     for idx in range(len(variables)):
         variable = variables[idx]
         varType = variable['type']
@@ -224,33 +225,41 @@ def preprocessScenario(obj):
         elif varType == 'constant':
             value = variable['value']
             if isinstance(value, list):
-                # We will be searching for exact match in case of arrays because we will replace the whole variable.
+                # We will be searching for exact match in case of arrays
+                #  because we will replace the whole variable.
                 searchForExactMatch = True
         else:
             value = None
             print 'Unknown variable type `' + variable['type'] + '`'
 
-        if value != None:
-            # Replacing the variable name with its value in the following variables.
+        if value is not None:
+            # Replacing the variable name with
+            # its value in the following variables.
+            vsyntax = '$[' + variable['name'] + ']'
             for idx2 in range(idx + 1, len(variables)):
-                variable2  = variables[idx2]
+                variable2 = variables[idx2]
                 if 'value' in variable2:
                     if searchForExactMatch:
-                        if variable2['value'] == '$[' + variable['name'] + ']':
+                        if variable2['value'] == vsyntax:
                             variable2['value'] = value
                     else:
-                        variable2['value'] = json.loads(json.dumps(variable2['value']).replace('$[' + variable['name'] + ']', value))
+                        variable2['value'] = json.loads(
+                            json.dumps(variable2['value'])
+                                .replace(vsyntax, value))
 
             # Replacing the variable name with its value in the steps.
             for step in steps:
                 if 'value' in step:
                     if searchForExactMatch:
-                        if step['value'] == '$[' + variable['name'] + ']':
+                        if step['value'] == vsyntax:
                             step['value'] = value
                     else:
-                        step['value'] = json.loads(json.dumps(step['value']).replace('$[' + variable['name'] + ']', value))
+                        step['value'] = json.loads(
+                            json.dumps(step['value'])
+                                .replace(vsyntax, value))
 
-    return steps;
+    return steps
+
 
 # Generate random string.
 def getRandomString(size=6, chars=string.ascii_lowercase + string.digits):
