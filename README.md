@@ -46,7 +46,7 @@ Felt is a front-end load tester. It generates load by running a lot of browser i
 
 ## Usage
 ```
-usage: main.py [-h] [--debug] [--verbose] [--threads THREADS] [--test]
+usage: main.py [-h] [--debug] [--verbose] [--threads THREADS] [--test] [--screenshot]
                scenario
 
 Start workload.
@@ -60,6 +60,7 @@ optional arguments:
   --verbose          makes generator more verbose
   --threads THREADS  number of threads to run simultaneously
   --test             run a scenario only once
+  --screenshot       save screenshot per step
 ```
 
 ## Authors / Contributors
