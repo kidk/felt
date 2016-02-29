@@ -65,4 +65,5 @@ optional arguments:
 
 * [Samuel Vandamme](http://www.sava.be)
 * Stijn Polfliet
+* Hatem Mostafa
 <img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo" />

@@ -1,0 +1,167 @@
+// This scenario is written for a magento application with sample data v1.9
+// You can follow the steps in the documentation to install it and test this scenario
+// http://devdocs.magento.com/guides/m1x/ce18-ee113/ht_magento-ce-sample.data.html
+// You can change the baseUrl to the url of your magento installation.
+{
+    "variables":[
+        {
+            "type": "randomString",
+            "length": 7,
+            "name": "emailPrefix"
+        },
+        {
+            "type": "constant",
+            "value": "http://magento001",
+            "name": "baseUrl"
+        },
+        {
+            "type": "constant",
+            "value": [
+                        "$[baseUrl]/accessories/bags-luggage.html",
+                        "$[baseUrl]/accessories/eyewear.html",
+                        "$[baseUrl]/vip.html",
+                        "$[baseUrl]/accessories/jewelry.html",
+                        "$[baseUrl]/home-decor/bed-bath.html",
+                        "$[baseUrl]/home-decor/electronics.html",
+                        "$[baseUrl]/home-decor/decorative-accents.html",
+                        "$[baseUrl]/sale/home-decor.html"
+                    ],
+            "name": "productPages"
+        }
+
+    ],
+    "steps": [
+
+        // ----------------------------------------------------------------------
+        //  Signing up the user.
+        // ----------------------------------------------------------------------
+        {
+            "action": "open_url",
+            "value": "$[baseUrl]/customer/account/create/"
+        },
+        {
+            "action": "set_value",
+            "selector": "input#firstname",
+            "value": "John"
+        },
+        {
+            "action": "set_value",
+            "selector": "input#lastname",
+            "value": "Doe"
+        },
+        {
+            "action": "set_value",
+            "selector": "input#email_address",
+            "value": "$[emailPrefix]@example.com"
+        },
+        {
+            "action": "set_value",
+            "selector": "input#password",
+            "value": "qwerty"
+        },
+        {
+            "action": "set_value",
+            "selector": "input#confirmation",
+            "value": "qwerty"
+        },
+        {
+            "action": "submit",
+            "selector": "#form-validate"
+        },
+
+        // ----------------------------------------------------------------------
+        // Adding products to the cart.
+        // ----------------------------------------------------------------------
+        {
+            "action": "open_url",
+            "value": "$[productPages]"
+        },
+        {
+            "action": "click_one",
+            "selector": "button.button.btn-cart[type=button]"
+        },
+        {
+            "action": "open_url",
+            "value": "$[productPages]"
+        },
+        {
+            "action": "click_one",
+            "selector": "button.button.btn-cart[type=button]"
+        },
+        {
+            "action": "open_url",
+            "value": "$[productPages]"
+        },
+        {
+            "action": "click_one",
+            "selector": "button.button.btn-cart[type=button]"
+        },
+
+        // ----------------------------------------------------------------------
+        // Checking out.
+        // ----------------------------------------------------------------------
+        {
+            "action": "open_url",
+            "value": "$[baseUrl]/checkout/onepage/"
+        },
+        {
+            "action": "set_value",
+            "selector": "input#billing\\:street1",
+            "value": "Nowhere 1"
+        },
+
+        {
+            "action": "set_value",
+            "selector": "input#billing\\:city",
+            "value": "Utopia"
+        },
+        {
+            "action": "set_value",
+            "selector": "select#billing\\:region_id",
+            "value": "1"
+        },
+        {
+            "action": "set_value",
+            "selector": "input#billing\\:postcode",
+            "value": "555AL"
+        },
+        {
+            "action": "set_value",
+            "selector": "input#billing\\:telephone",
+            "value": "0123456789"
+        },
+        {
+            "action": "click",
+            "selector": "#checkout-step-billing button.button[title=Continue]"
+        },
+        {
+            "action": "wait_for_element",
+            "selector": "input[type=radio][name=shipping_method]"
+        },
+        {
+            "action": "click_one",
+            "selector": "input[type=radio][name=shipping_method]"
+        },
+        {
+            "action": "click",
+            "selector": "#shipping-method-buttons-container button.button"
+        },
+        {
+            "action": "wait_for_element",
+            "selector": "#shipping-method-buttons-container button.button"
+        },
+        {
+            "action": "click",
+            "selector": "div#payment-buttons-container button"
+        },
+        {
+            "action": "wait_for_element",
+            "selector": "#checkout-review-submit button.button"
+        },
+        {
+            "action": "click",
+            "selector": "#checkout-review-submit button.button"
+        }
+    ]
+
+}
