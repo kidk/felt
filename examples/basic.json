@@ -1,14 +1,17 @@
-[
-    {
-        "action": "open_url",
-        "value": "http://felt.sava.be/"
-    },
-    {
-        "action": "click",
-        "selector": "#navbar > ul > li:nth-child(2) > a"
-    },
-    {
-        "action": "open_url",
-        "value": "http://felt.sava.be/login.php"
-    }
-]
+{
+    "variables":[],
+    "steps": [
+        {
+            "action": "open_url",
+            "value": "http://felt.sava.be/"
+        },
+        {
+            "action": "click",
+            "selector": "#navbar > ul > li:nth-child(2) > a"
+        },
+        {
+            "action": "open_url",
+            "value": "http://felt.sava.be/login.php"
+        }
+    ]
+}

@@ -28,6 +28,7 @@ Felt is a front-end load tester. It generates load by running a lot of browser i
 * Tested on Python 2.7.10
 * Unix based operating system
 * Local install of [PhantomJS](http://phantomjs.org/download.html) or [SlimerJS](https://slimerjs.org/download.html) available in PATH
+* Install commentjson
 
 ## Quick start
 
@@ -39,13 +40,13 @@ Felt is a front-end load tester. It generates load by running a lot of browser i
     The felt directory should look something like this:
         $ ls
         LICENSE		README.md	js		main.py		phantomjs
-
+1. pip install commentjson
 1. `python main.py --verbose examples/basic.json`
 1. `ctrl + c` to stop
 
 ## Usage
 ```
-usage: main.py [-h] [--debug] [--verbose] [--threads THREADS] [--test]
+usage: main.py [-h] [--debug] [--verbose] [--threads THREADS] [--test] [--screenshot]
                scenario
 
 Start workload.
@@ -59,10 +60,12 @@ optional arguments:
   --verbose          makes generator more verbose
   --threads THREADS  number of threads to run simultaneously
   --test             run a scenario only once
+  --screenshot       save screenshot per step
 ```
 
 ## Authors / Contributors
 
 * [Samuel Vandamme](http://www.sava.be)
 * Stijn Polfliet
+* Hatem Mostafa
 <img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo" />

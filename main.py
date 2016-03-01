@@ -9,6 +9,10 @@ import sys
 import time
 import json
 import os.path
+import string
+import random
+import commentjson
+import copy
 from Queue import Queue, Empty
 from threading import Thread
 
@@ -16,7 +20,7 @@ __license__ = "MIT"
 __maintainer__ = "Samuel Vandamme"
 __email__ = "samuel@sava.be"
 __author__ = "Samuel Vandamme"
-__credits__ = ["Stijn Polfliet", "Samuel Vandamme"]
+__credits__ = ["Stijn Polfliet", "Samuel Vandamme", "Hatem Mostafa"]
 __version__ = "alpha"
 
 threadQueue = Queue()
@@ -34,7 +38,7 @@ def main(args):
     # Load in scenario
     with open(options['scenario'], 'r') as content_file:
         content = content_file.read()
-    scenario = json.loads(content)
+    scenario = commentjson.loads(content)
 
     # Test option
     if options['test']:
@@ -72,6 +76,8 @@ def parse_arguments(args):
                         help="run a scenario only once")
     parser.add_argument('--slimerjs', action='store_true',
                         help="use slimerjs instead of phantomjs")
+    parser.add_argument('--screenshot', action='store_true',
+                        help="provide screenshots after each step")
     parser.add_argument('scenario')
     args = parser.parse_args()
 
@@ -92,7 +98,8 @@ def parse_arguments(args):
         'threads': args.threads,
         'verbose': args.verbose,
         'debug': args.debug,
-        'test': args.test
+        'test': args.test,
+        'screenshot': args.screenshot
     }
 
     return options
@@ -182,7 +189,7 @@ def execute(threadId, scenario, options):
         options['browser'],
         'worker.js',
         str(threadId),
-        json.dumps(scenario),
+        json.dumps(preprocessScenario(scenario)),
         json.dumps(options)
     ]
     process = subprocess.Popen(
@@ -203,6 +210,60 @@ def execute(threadId, scenario, options):
             break
 
     return None
+
+
+# Preprocess the scenario json so that tha variables are filled in the steps.
+def preprocessScenario(obj):
+    variables = copy.deepcopy(obj['variables'])
+    steps = copy.deepcopy(obj['steps'])
+    for idx in range(len(variables)):
+        variable = variables[idx]
+        varType = variable['type']
+        searchForExactMatch = False
+        if varType == 'randomString':
+            value = getRandomString(variable['length'])
+        elif varType == 'constant':
+            value = variable['value']
+            if isinstance(value, list):
+                # We will be searching for exact match in case of arrays
+                #  because we will replace the whole variable.
+                searchForExactMatch = True
+        else:
+            value = None
+            print 'Unknown variable type `' + variable['type'] + '`'
+
+        if value is not None:
+            # Replacing the variable name with
+            # its value in the following variables.
+            vsyntax = '$[' + variable['name'] + ']'
+            for idx2 in range(idx + 1, len(variables)):
+                variable2 = variables[idx2]
+                if 'value' in variable2:
+                    if searchForExactMatch:
+                        if variable2['value'] == vsyntax:
+                            variable2['value'] = value
+                    else:
+                        variable2['value'] = json.loads(
+                            json.dumps(variable2['value'])
+                                .replace(vsyntax, value))
+
+            # Replacing the variable name with its value in the steps.
+            for step in steps:
+                if 'value' in step:
+                    if searchForExactMatch:
+                        if step['value'] == vsyntax:
+                            step['value'] = value
+                    else:
+                        step['value'] = json.loads(
+                            json.dumps(step['value'])
+                                .replace(vsyntax, value))
+
+    return steps
+
+
+# Generate random string.
+def getRandomString(size=6, chars=string.ascii_lowercase + string.digits):
+    return ''.join(random.choice(chars) for x in range(size))
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))

@@ -1,25 +1,44 @@
-
 var page = require('webpage').create();
 var system = require('system');
 var fs = require('fs');
 
-// Options
+/**
+ * The options object.
+ *
+ * @type {Object}
+ */
 options = {
     // Debug mode
     debug: false,
-
     // Verbose mode
-    verbose: false
-}
+    verbose: false,
+    // Screenshot mode
+    screenshot: false
+};
 
-// Run statistics
+/**
+ * The number of requests.
+ * @type {Number}
+ */
 var requests = 0;
+
+/**
+ * The results.
+ *
+ * @type {Array}
+ */
 var results = [];
+
+/**
+ * The requested page url.
+ *
+ * @type {string}
+ */
 var requestUrl;
 
-/*
-    Parse commandline arguments
-*/
+/**
+ * Parse commandline arguments
+ */
 uid = system.args[1];
 scenario = JSON.parse(system.args[2]);
 arguments = JSON.parse(system.args[3]);
@@ -28,186 +47,435 @@ for (var id in arguments) {
 }
 
 
-/*
-    Wait for page to load completely
-*/
-var resources = [];
+/**
+ * The map of resources that are requested/loaded in the page.
+ *
+ * @type {Object}
+ */
+var resources = {};
+
+/**
+ * A boolean to indicate if the page is ready or not.
+ *
+ * @type {boolean}
+ */
 var pageReady = false;
 
-// Check every 100ms
-setInterval(checkReady, 100);
+/**
+ * Colors used for formatting the output to look nice on the terminal.
+ *
+ * @type {Object}
+ */
+var textFormatting = {
+    HEADER: '\033[95m',
+    OKBLUE: '\033[94m',
+    OKGREEN: '\033[92m',
+    WARNING: '\033[93m',
+    FAIL: '\033[91m',
+    ENDC: '\033[0m',
+    BOLD: '\033[1m',
+    UNDERLINE: '\033[4m'
+};
 
-function checkReady() {
-    if (!pageReady) {
-        return;
+/**
+ * Is ready function.
+ * This function is used to check if script should wait for any resources
+ * before continuing to run any actions in the scenario.
+ *
+ * @return {boolean}
+ */
+function isReady() {
+    if (action === 0) {
+        return true;
+    }
+
+    if (pageReady === false) {
+        return false;
     }
 
     for (var id in resources) {
         if (resources[id].status == 'requested') {
-            return;
+            return false;
         }
     }
 
-    nextAction();
+    return true;
 }
 
-
-/*
-    Exit functionality
-*/
+/**
+ * Indicates the exited status.
+ *
+ * @type {boolean}
+ */
 var exited = false;
+
+/**
+ * Exit functionality.
+ */
 function exit() {
     if (!exited) {
         exited = true;
-        console.log(JSON.stringify(results));
+        console.log(JSON.stringify(results, null, 2));
 
         phantom.exit(0);
     }
 }
 
 // After 120 seconds, we always kill worker, it is probably stuck
-setInterval(exit, 120000);
+setTimeout(exit, 120000);
 
-
-/*
-    Scenario functionality
+/**
+ * Action index.
+ *
+ * @type {number}
  */
 action = 0;
+
+/**
+ * Scenario functionality.
+ */
 function nextAction() {
-    current = scenario[action];
-    if (!current) {
-        exit();
-    }
+    if (isReady() === true) {
+        current = scenario[action];
+        if (!current) {
+            exit();
+        }
 
-    output(JSON.stringify(current));
-    switch(current.action) {
-        case 'open_url':
-            loadpage(current.value);
-        break;
-        case 'set_value':
-            set_value(current.selector, current.value);
-        break;
-        case 'submit':
-            submit(current.selector);
-        break;
-        case 'click':
-            click(current.selector);
-        break;
-        case 'click_one':
-            click_one(current.selector);
-        break;
-        default:
-            output('unknown action: ' + JSON.stringify(current));
-    }
+        output(JSON.stringify(current));
+        var actionSuccess = true;
+        switch (current.action) {
+            case 'open_url':
+                loadpage(current.value);
+                break;
 
-    action++;
+            case 'set_value':
+                set_value(current.selector, current.value);
+                break;
+
+            case 'submit':
+                submit(current.selector);
+                break;
+
+            case 'click':
+                click(current.selector);
+                break;
+
+            case 'click_one':
+                click_one(current.selector);
+                break;
+
+            case 'sleep':
+                sleep(current.value);
+                break;
+
+            case 'wait_for_element':
+                actionSuccess = wait_for_element(current.selector);
+                break;
+
+            default:
+                warn('unknown action: ' + JSON.stringify(current));
+        }
+
+        if (options.screenshot === true) {
+            page.render('screenshot_' + action + '.png');
+        }
+
+        if (actionSuccess === true) {
+            action++;
+
+        }
+    }
+    setTimeout(function() {
+        nextAction();
+    }, 200);
 }
 
-// Set a value inside webpage
+/**
+ * Set a value for an element.
+ * @param {string} selector The selector.
+ * @param {string} value    The value.
+ */
 function set_value(selector, value) {
-    page.evaluate(function (selector, value) {
+    page.evaluate(function(selector, value) {
         document.querySelector(selector).value = value;
     }, selector, value);
 }
 
-// Submit form
+/**
+ * Submit form.
+ *
+ * @param  {string} selector The selector.
+ */
 function submit(selector) {
-    page.evaluate(function (selector) {
+    page.evaluate(function(selector) {
         document.querySelector(selector).submit();
     }, selector);
 }
 
-// Click element
+/**
+ * Click element.
+ *
+ * @param  {string} selector The selector.
+ */
 function click(selector) {
-    page.evaluate(function (selector) {
-        document.querySelector(selector).click();
+    var returnedValue = page.evaluate(function(selector) {
+        var message = '';
+        var elements = document.querySelectorAll(selector);
+        if (elements !== null && elements.length === 1) {
+            elements[0].click();
+        } else if (elements !== null && elements.length > 1) {
+            message = 'Selector ' + selector + ' matches more than 1 element, clicking the first element.';
+        } else {
+            message = 'Selector ' + selector + ' does not match any element in the dom';
+        }
+
+        return message;
     }, selector);
+
+    if (returnedValue !== '') {
+        warn(returnedValue);
+    }
 }
 
-// Clicks a random element in the list
+/**
+ * Clicks a random element in the list.
+ *
+ * @param  {string} selector The selector.
+ */
 function click_one(selector) {
-    page.evaluate(function (selector) {
+    var returnedValue = page.evaluate(function(selector) {
         elements = document.querySelectorAll(selector);
-        element = elements[Math.floor(Math.random()*elements.length)];
+        var message = '';
+        if (elements === null || elements.length === 0) {
+            message = 'Selector ' + selector + ' does not match any element in the dom';
+        } else {
+            element = elements[Math.floor(Math.random() * elements.length)];
+            element.click();
+        }
 
-        element.click();
+        return message;
     }, selector);
+
+    if (returnedValue !== '') {
+        warn(returnedValue);
+    }
 }
 
-// Loads the next page
+/**
+ * Loads a page or picks a page from a list of urls.
+ *
+ * @param  {Array.<string>|string} url The url(s) that will be loaded.
+ */
 function loadpage(url) {
+    if (url instanceof Array) {
+        url = url[Math.floor(Math.random() * url.length)];
+    }
+
     requestUrl = url;
+    page.viewportSize = { width: 1920, height: 1080 };
+    page.clipRect = { top: 0, left: 0, width: 1920, height: 1080 };
     page.open(url);
 }
 
-/*
-    Start the run
-*/
-nextAction()
+/**
+ * Return true if the element is visible.
+ *
+ * @param {string} selector The selector.
+ * @return {boolean}
+ */
+function wait_for_element(selector) {
+    var found = page.evaluate(function(selector) {
+        var elements = document.querySelectorAll(selector);
+        if (elements !== null && elements.length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }, selector);
+    return found;
+}
+
+/**
+ * Makes the script sleeps for amount of time in ms.
+ *
+ * @param  {number} value value of sleep in ms.
+ */
+function sleep(value) {
+    pageReady = false;
+    setTimeout(function() {
+        pageReady = true;
+    }, value);
+}
+
+/**
+ * Start the run
+ */
+nextAction();
 
 /*
-    Helper functions
-*/
+ * ---------------------------------------------------------------------- *
+ * Helper functions for logging.
+ * ---------------------------------------------------------------------- *
+ */
+
+/**
+ * Function used for output verbose logs.
+ *
+ * @param  {string} message The message.
+ */
 function output(message) {
     if (options['verbose']) {
-        console.log(pad(uid) + "\t" + Date.now() + ":\t" + message);
+        console.log(pad(uid) + '\t' + Date.now() + ':\t' + message);
     }
 }
 
+/**
+ * Function used for output debug logs.
+ *
+ * @param  {string} message The message.
+ */
 function debug(message) {
     if (options['debug']) {
-        console.error(pad(uid) + "\t" + Date.now() + ":\t" + message);
+        console.log(pad(uid) + '\t' + Date.now() + ':\t' + message);
     }
 }
 
-// Source [InfinitiesLoop] http://stackoverflow.com/questions/2998784/how-to-output-integers-with-leading-zeros-in-javascript
+/**
+ * Function used for output verbose warnings.
+ *
+ * @param  {string} message The message.
+ */
+function warn(message) {
+    if (options['verbose']) {
+        console.log(textFormatting.WARNING + pad(uid) + '\t' + Date.now() + ':\t' + message + textFormatting.ENDC);
+    }
+}
+
+/**
+ * Function used for output verbose errors.
+ *
+ * @param  {string} message The message.
+ */
+function error(message) {
+    if (options['verbose']) {
+        console.log(textFormatting.FAIL + pad(uid) + '\t' + Date.now() + ':\t' + message + textFormatting.ENDC);
+    }
+}
+
+/**
+ * Function used for padding string with zeroes.
+ * Source [InfinitiesLoop] http://stackoverflow.com/questions/2998784/how-to-output-integers-with-leading-zeros-in-javascript
+ *
+ * @param  {number} num The message.
+ * @param  {number} size The message.
+ * @return {string}
+ */
 function pad(num, size) {
-    var s = "00000" + num;
-    return s.substr(s.length-size);
+    var s = '00000' + num;
+    return s.substr(s.length - size);
 }
 
 /*
-    Browser callbacks
-*/
+ * ---------------------------------------------------------------------- *
+ * Browser callbacks.
+ * ---------------------------------------------------------------------- *
+ */
+
+/**
+ * Page error handler.
+ * @param  {string} msg   The message.
+ * @param  {Object} trace The trace.
+ */
 page.onError = function(msg, trace) {
-    debug('onError: ' + msg + "\n" + JSON.stringify(trace));
+    error('Error: ' + msg + '\n' + JSON.stringify(trace));
 };
 
+/**
+ * Resource request handler.
+ * @param {Object} requestData    The request data.
+ * @param {Object} networkRequest The network request.
+ */
 page.onResourceRequested = function(requestData, networkRequest) {
     debug('onResourceRequested: \n' + JSON.stringify(requestData, networkRequest));
 
     resources[requestData.id] = {
-        'method': requestData.method,
-        'url': requestData.url,
-        'status': 'requested'
+        method: requestData.method,
+        url: requestData.url,
+        status: 'requested'
     };
 };
 
+/**
+ * Resource received handler.
+ *
+ * @param {Object} response The response.
+ */
 page.onResourceReceived = function(response) {
     debug('onResourceReceived: \n' + JSON.stringify(response));
 
-    resources[response.id].status = 'done';
+    if (resources[response.id] !== undefined) {
+        resources[response.id].status = 'done';
+    } else {
+        resources[response.id] = {
+            status: 'done'
+        };
+    }
 };
 
+/**
+ * Resource error handler.
+ *
+ * @param {Object} resourceError The resource that produced the error.
+ */
 page.onResourceError = function(resourceError) {
     debug('onResourceError: \n' + JSON.stringify(resourceError));
 
-    resources[response.id].status = 'error';
+    if (resources[response.id] !== undefined) {
+        resources[response.id].status = 'error';
+    } else {
+        resources[response.id] = {
+            status: 'error'
+        };
+    }
 };
 
+/**
+ * Resource timeout handler.
+ * @param {Object} request The request that timedout.
+ */
 page.onResourceTimeout = function(request) {
     debug('onResourceTimeout: \n' + JSON.stringify(request));
 
-    resources[request.id].status = 'timeout';
+    if (resources[response.id] !== undefined) {
+        resources[response.id].status = 'timeout';
+    } else {
+        resources[response.id] = {
+            status: 'timeout'
+        };
+    }
 };
 
+/**
+ * Url change handler.
+ *
+ * @param {string} targetUrl The target url.
+ */
 page.onUrlChanged = function(targetUrl) {
     debug('onUrlChanged: \n TargetUrl: ' + targetUrl);
 
     requestUrl = targetUrl;
 };
 
-var t;
+/**
+ * The page intialize time in milliseconds.
+ *
+ * @type {number}
+ */
+var pageInitializetime;
+
+/**
+ * Handle when the page is initialized.
+ */
 page.onInitialized = function() {
     debug('onInitialized ' + requestUrl);
 
@@ -216,12 +484,17 @@ page.onInitialized = function() {
 
     // Reset checkReady()
     pageReady = false;
-    resources = [];
+    resources = {};
 
     // Save load start time
-    t = Date.now();
+    pageInitializetime = Date.now();
 };
 
+/**
+ * Handle when the page load is finished.
+ *
+ * @param {string} status The status is either 'suceess' or 'fail'
+ */
 page.onLoadFinished = function(status) {
     debug('onLoadFinished ' + requestUrl + ': \n Status: ' + status);
 
@@ -230,15 +503,25 @@ page.onLoadFinished = function(status) {
         loadpage();
     } else {
         // Only save results when we know a page was requested, onLoadFinished gets called a lot more then needed
-        if (t > 0) {
-            e = Date.now();
+        if (pageInitializetime > 0) {
+            var pageLoadFinishTime = Date.now();
             results.push({
-                "url": requestUrl,
-                "start": t,
-                "end": e,
-                "time": e - t
+                'url': requestUrl,
+                'start': pageInitializetime,
+                'end': pageLoadFinishTime,
+                'time': pageLoadFinishTime - pageInitializetime,
+                'step': JSON.stringify(scenario[action - 1]).replace(new RegExp('"', 'g'), '\'')
             });
-            t = 0;
+            pageInitializetime = 0;
         }
     }
+};
+
+/**
+ * This is for printing any logs or errors that may have happened in the page.evaluate function.
+ *
+ * @param {string} msg The logged message.
+ */
+page.onConsoleMessage = function(msg) {
+    console.log(msg);
 };
