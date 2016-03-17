@@ -212,30 +212,45 @@ def execute(threadId, scenario, options):
     return None
 
 
-# Preprocess the scenario json so that tha variables are filled in the steps.
 def preprocessScenario(obj):
+    """Preprocess the scenario so that the variables are filled in."""
     variables = copy.deepcopy(obj['variables'])
     steps = copy.deepcopy(obj['steps'])
+
+    # Loop all variables
     for idx in range(len(variables)):
+
+        # Current variable
         variable = variables[idx]
+
+        # Type
         varType = variable['type']
+
         searchForExactMatch = False
+
+        # Fetch value of variable
         if varType == 'randomString':
             value = getRandomString(variable['length'])
         elif varType == 'constant':
             value = variable['value']
             if isinstance(value, list):
                 # We will be searching for exact match in case of arrays
-                #  because we will replace the whole variable.
+                # because we will replace the whole variable.
                 searchForExactMatch = True
+        # Error message in case unknown type
         else:
             value = None
             print 'Unknown variable type `' + variable['type'] + '`'
 
+        # If valid variable
         if value is not None:
             # Replacing the variable name with
             # its value in the following variables.
+
+            # String to find
             vsyntax = '$[' + variable['name'] + ']'
+
+            # Loop variables after current one
             for idx2 in range(idx + 1, len(variables)):
                 variable2 = variables[idx2]
                 if 'value' in variable2:
@@ -261,8 +276,8 @@ def preprocessScenario(obj):
     return steps
 
 
-# Generate random string.
 def getRandomString(size=6, chars=string.ascii_lowercase + string.digits):
+    """Generate random string."""
     return ''.join(random.choice(chars) for x in range(size))
 
 if __name__ == "__main__":
