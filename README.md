@@ -28,7 +28,7 @@ Felt is a front-end load tester. It generates load by running a lot of browser i
 * Tested on Python 2.7.10
 * Unix based operating system
 * Local install of [PhantomJS](http://phantomjs.org/download.html) or [SlimerJS](https://slimerjs.org/download.html) available in PATH
-* Install commentjson
+* Install commentjson (`pip install commentjson`)
 
 ## Quick start
 
@@ -68,4 +68,5 @@ optional arguments:
 * [Samuel Vandamme](http://www.sava.be)
 * Stijn Polfliet
 * Hatem Mostafa
+
 <img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo" />
