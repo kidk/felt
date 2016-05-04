@@ -78,6 +78,8 @@ def parse_arguments(args):
                         help="use slimerjs instead of phantomjs")
     parser.add_argument('--screenshot', action='store_true',
                         help="provide screenshots after each step")
+    parser.add_argument('--user-agent', dest='userAgent',
+                        help="provide a custom User-Agent")
     parser.add_argument('scenario')
     args = parser.parse_args()
 
@@ -99,7 +101,8 @@ def parse_arguments(args):
         'verbose': args.verbose,
         'debug': args.debug,
         'test': args.test,
-        'screenshot': args.screenshot
+        'screenshot': args.screenshot,
+        'userAgent': args.userAgent
     }
 
     return options

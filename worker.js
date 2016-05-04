@@ -13,7 +13,9 @@ options = {
     // Verbose mode
     verbose: false,
     // Screenshot mode
-    screenshot: false
+    screenshot: false,
+    // Custom User-Agent
+    userAgent: ''
 };
 
 /**
@@ -44,6 +46,13 @@ scenario = JSON.parse(system.args[2]);
 arguments = JSON.parse(system.args[3]);
 for (var id in arguments) {
     options[id] = arguments[id];
+}
+
+/**
+ * Set the User-Agent if it was provided.
+ */
+if (options['userAgent'] !== '') {
+    page.settings.userAgent = options['userAgent'];
 }
 
 
