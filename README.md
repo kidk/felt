@@ -63,10 +63,11 @@ optional arguments:
   --screenshot       save screenshot per step
 ```
 
-## Authors / Contributors
+## Contributors
 
 * [Samuel Vandamme](http://www.sava.be)
 * Stijn Polfliet
 * Hatem Mostafa
+* Frederick Ryckbosch
 
 <img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo" />
