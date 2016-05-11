@@ -54,6 +54,17 @@ def main(args):
         print
         print "################################"
 
+    # Create watchdog thread
+    if options['maxTime'] > 0:
+        import os
+
+        def watchdog(sec):
+            """ Stops the process after x seconds. """
+            time.sleep(sec)
+            os._exit(0)
+
+        Thread(target=watchdog, args=(options['maxTime'],)).start()
+
     # Start worker
     worker = WebworkerService()
     worker.run(scenario, options)
@@ -78,8 +89,10 @@ def parse_arguments(args):
                         help="use slimerjs instead of phantomjs")
     parser.add_argument('--screenshot', action='store_true',
                         help="provide screenshots after each step")
-    parser.add_argument('--user-agent', dest='userAgent',
+    parser.add_argument('--user-agent', type=str, dest='userAgent',
                         help="provide a custom User-Agent")
+    parser.add_argument('--max-time', type=int, default=0, dest='maxTime',
+                        help="provide a maximum runtime")
     parser.add_argument('scenario')
     args = parser.parse_args()
 
@@ -102,7 +115,8 @@ def parse_arguments(args):
         'debug': args.debug,
         'test': args.test,
         'screenshot': args.screenshot,
-        'userAgent': args.userAgent
+        'userAgent': args.userAgent,
+        'maxTime': args.maxTime
     }
 
     return options
