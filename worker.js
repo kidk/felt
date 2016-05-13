@@ -439,10 +439,10 @@ page.onResourceReceived = function(response) {
 page.onResourceError = function(resourceError) {
     debug('onResourceError: \n' + JSON.stringify(resourceError));
 
-    if (resources[response.id] !== undefined) {
-        resources[response.id].status = 'error';
+    if (resources[resourceError.id] !== undefined) {
+        resources[resourceError.id].status = 'error';
     } else {
-        resources[response.id] = {
+        resources[resourceError.id] = {
             status: 'error'
         };
     }
