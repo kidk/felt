@@ -39,6 +39,13 @@ var results = [];
 var requestUrl;
 
 /**
+ * Url reported when request Url is undefined.
+ *
+ * @type {string}
+ */
+var defaultUrl = 'about:blank';
+
+/**
  * Parse commandline arguments
  */
 uid = system.args[1];
@@ -149,7 +156,6 @@ function nextAction() {
         if (!current) {
             exit();
         }
-
         output(JSON.stringify(current));
         var actionSuccess = true;
         switch (current.action) {
@@ -181,6 +187,10 @@ function nextAction() {
                 actionSuccess = wait_for_element(current.selector);
                 break;
 
+            case 'check_element_exists':
+                check_element_exists(current, contains_text);
+                break;
+
             default:
                 warn('unknown action: ' + JSON.stringify(current));
         }
@@ -191,7 +201,6 @@ function nextAction() {
 
         if (actionSuccess === true) {
             action++;
-
         }
     }
     setTimeout(function() {
@@ -231,7 +240,17 @@ function click(selector) {
         var message = '';
         var elements = document.querySelectorAll(selector);
         if (elements !== null && elements.length === 1) {
-            elements[0].click();
+            // TODO: click on an <a> element is not supported in all browsers by default.
+            // find a more clean solution.
+            if (typeof elements[0].click === 'function') {
+                elements[0].click();
+            } else if (elements[0].fireEvent) {
+                elements[0].fireEvent('on' + 'click');
+            } else {
+                var evObj = document.createEvent('Events');
+                evObj.initEvent('click', true, false);
+                elements[0].dispatchEvent(evObj);
+            }
         } else if (elements !== null && elements.length > 1) {
             message = 'Selector ' + selector + ' matches more than 1 element, clicking the first element.';
         } else {
@@ -314,6 +333,58 @@ function sleep(value) {
     setTimeout(function() {
         pageReady = true;
     }, value);
+}
+
+/**
+ * Search for a specific element in a page.
+ *
+ * @param  {object} current scenario.
+ *
+ * @param  {function} function that do other checks.
+ */
+function check_element_exists(current, checker) {
+    var found = page.evaluate(function(current, checker) {
+        var elements = document.querySelectorAll(current.selector), i;
+
+        if (elements === null || elements.length === 0) {
+            return false;
+        }
+
+        if (typeof checker !== "function") {
+            return true;
+        }
+
+        // Do other checks if are set.
+        for (i = 0; i < elements.length; ++i) {
+            var found = checker(elements[i], current)
+            if (found === true) {
+                return true;
+            }  
+        }
+
+        return false;
+
+    }, current, checker);
+
+    results.push({
+        'success': found,
+        'url': requestUrl,
+        'step': JSON.stringify(current).replace(new RegExp('"', 'g'), '"')
+    });
+
+    return found;
+}
+
+/**
+ * Checker used for check_element_exists to add a content check.
+ *
+ * @param  {object} a page element.
+ *
+ * @param  {object} current scenario.
+ */
+function contains_text(element, current) {
+    var textProperty = 'textContent' in document ? 'textContent' : 'innerText';
+    return element[textProperty].indexOf(current.value) > -1
 }
 
 /**
@@ -509,17 +580,24 @@ page.onLoadFinished = function(status) {
 
     pageReady = true;
     if (status !== 'success') {
+        results.push({
+            'url': requestUrl,
+            'success': false,
+            'step': JSON.stringify(scenario[action - 1]).replace(new RegExp('"', 'g'), '"')
+        });
+
         loadpage();
-    } else {
+    } else if (requestUrl !== defaultUrl){
         // Only save results when we know a page was requested, onLoadFinished gets called a lot more then needed
         if (pageInitializetime > 0) {
             var pageLoadFinishTime = Date.now();
             results.push({
                 'url': requestUrl,
+                'success': true,
                 'start': pageInitializetime,
                 'end': pageLoadFinishTime,
                 'time': pageLoadFinishTime - pageInitializetime,
-                'step': JSON.stringify(scenario[action - 1]).replace(new RegExp('"', 'g'), '\'')
+                'step': JSON.stringify(scenario[action - 1]).replace(new RegExp('"', 'g'), '"')
             });
             pageInitializetime = 0;
         }
