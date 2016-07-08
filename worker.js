@@ -245,7 +245,7 @@ function click(selector) {
             if (typeof elements[0].click === 'function') {
                 elements[0].click();
             } else if (elements[0].fireEvent) {
-                elements[0].fireEvent('on' + 'click');
+                elements[0].fireEvent('onclick');
             } else {
                 var evObj = document.createEvent('Events');
                 evObj.initEvent('click', true, false);
