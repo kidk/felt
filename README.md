@@ -63,6 +63,9 @@ optional arguments:
   --screenshot       save screenshot per step
 ```
 
+## Development
+Included in this repository is a [Vagrant](https://www.vagrantup.com/) file which you can use to develop Felt locally. Please don't hesitate to submit bugs, feature requests or pull requests. 
+
 ## Contributors
 
 * [Samuel Vandamme](http://www.sava.be)
