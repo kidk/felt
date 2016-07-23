@@ -69,5 +69,6 @@ optional arguments:
 * Stijn Polfliet
 * Hatem Mostafa
 * Frederick Ryckbosch
+* Cristian Ciutea
 
 <img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo" />
