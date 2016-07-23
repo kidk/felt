@@ -13,15 +13,13 @@ Felt is a front-end load tester. It generates load by running a lot of browser i
     * Ember.js
 * Cache warming
 * Quick local load tests
+* Synthetic monitoring
 
 ## Features
 
 * Real browser load testing of web applications
 * Works with PhantomJS (webkit) and SlimerJS (firefox)
 * Scenarios
-* Performance statistics **(TODO)**
-* Statistics **(TODO)**
-* Multi machine load testing **(TODO)**
 
 ## Requirements
 
