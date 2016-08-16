@@ -22,7 +22,7 @@ def main(args):
     """Main function.
 
     The main function parses the command line arguments, reads the input file
-    and starts the generator.
+    and inits the generator.
     """
     # Parse arguments
     parser = argparse.ArgumentParser(description='Start workload.')

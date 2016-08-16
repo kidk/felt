@@ -1,11 +1,11 @@
+"""Core files for Felt.
+
+Handles browser instances
+"""
 
 import os
 import time
 from threading import Thread
-import string
-import random
-import commentjson
-import copy
 import json
 import sys
 from Queue import Queue, Empty
@@ -18,12 +18,17 @@ __author__ = "Samuel Vandamme"
 __credits__ = ["Stijn Polfliet", "Samuel Vandamme", "Hatem Mostafa"]
 __version__ = "alpha"
 
+
 class Felt:
+    """Felt class."""
+
     def __init__(self, options, scenario):
+        """Init vars."""
         self.scenario = scenario
         self.options = options
 
     def run(self):
+        """Start Felt run and execute watchdog."""
         if self.options.isVerbose():
             print "################################"
             print "\tFelt (%s)" % __version__
@@ -40,8 +45,9 @@ class Felt:
         worker.run(self.scenario, self.options)
 
     def initWatchdog(self):
+        """Init watchdog and kill thread after x seconds."""
         def watchdog(sec):
-            """ Stops the process after x seconds. """
+            """ Stops the process after x seconds."""
             time.sleep(sec)
             os._exit(0)
 
