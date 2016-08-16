@@ -1,0 +1,125 @@
+
+import os
+import time
+from threading import Thread
+import string
+import random
+import commentjson
+import copy
+import json
+import sys
+from Queue import Queue, Empty
+import subprocess
+
+__license__ = "MIT"
+__maintainer__ = "Samuel Vandamme"
+__email__ = "samuel@sava.be"
+__author__ = "Samuel Vandamme"
+__credits__ = ["Stijn Polfliet", "Samuel Vandamme", "Hatem Mostafa"]
+__version__ = "alpha"
+
+class Felt:
+    def __init__(self, options, scenario):
+        self.scenario = scenario
+        self.options = options
+
+    def run(self):
+        if self.options.isVerbose():
+            print "################################"
+            print "\tFelt (%s)" % __version__
+            print "################################"
+            print
+        #    print options
+            print
+            print "################################"
+
+        if self.options.getMaximumExectionTime() > 0:
+            self.initWatchdog()
+
+        worker = WebworkerService()
+        worker.run(self.scenario, self.options)
+
+    def initWatchdog(self):
+        def watchdog(sec):
+            """ Stops the process after x seconds. """
+            time.sleep(sec)
+            os._exit(0)
+
+        Thread(target=watchdog, args=(self.options.getMaximumExectionTime(),)).start()
+
+threadQueue = Queue()
+class WebworkerService:
+    """WebworkerService class."""
+
+    def run(self, scenario, options):
+        """Run function.
+
+        Init run of main workload loop
+        """
+        self.threadcount = 0
+        self.threadstarted = 0
+        self.running = True
+
+        # Start new one every minute
+        while self.running:
+            self.startRun(scenario, options)
+
+            # Keep track of running threads
+            try:
+                while True:
+                    threadQueue.get(False)
+
+                    self.threadcount -= 1
+
+                    threadQueue.task_done()
+
+                    # Test mode
+                    if options.isTest():
+                        self.running = False
+
+            except Empty:
+                pass
+
+            time.sleep(0.25)
+
+    def startRun(self, scenario, options):
+        """Initiate run."""
+        if (options.getThreads() > self.threadcount):
+            # Start threads
+            for x in range(options.getThreads() - self.threadcount):
+                self.threadcount += 1
+                self.threadstarted += 1
+                Thread(
+                    target=WebworkerService.execute,
+                    args=(self.threadstarted, scenario, options, )
+                ).start()
+
+    @staticmethod
+    def execute(threadId, scenario, options):
+        """Execute browser thread with options."""
+        command = [
+            options.getBrowser(),
+            'worker.js',
+            str(threadId),
+            json.dumps(scenario.preprocessScenario()),
+            json.dumps(options.getRunnerOptions())
+        ]
+        print command
+        process = subprocess.Popen(
+            command,
+            shell=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT
+        )
+
+        # Main loop
+        while True:
+            nextline = process.stdout.readline()
+            sys.stdout.write(nextline)
+            sys.stdout.flush()
+
+            if process.poll() is not None:
+                threadQueue.put("Something")
+                break
+
+        return None
