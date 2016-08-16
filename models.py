@@ -1,8 +1,7 @@
-import string
 import random
-import commentjson
 import copy
 import json
+import string
 
 
 __license__ = "MIT"
@@ -88,14 +87,12 @@ class Options:
         }
 
 class Scenario():
-    def __init__(self, filename):
-        with open(filename, 'r') as content_file:
-            content = content_file.read()
-        self._json = commentjson.loads(content)
+    def __init__(self, scenario):
+        self._scenario = scenario;
 
     def preprocessScenario(self):
         """Preprocess the scenario so that the variables are filled in."""
-        obj = copy.deepcopy(self._json)
+        obj = copy.deepcopy(self._scenario)
         variables = copy.deepcopy(obj['variables'])
         steps = copy.deepcopy(obj['steps'])
 
@@ -157,6 +154,6 @@ class Scenario():
 
         return steps
 
-    def getRandomString(size=6, chars=string.ascii_lowercase + string.digits):
+    def getRandomString(self, size=6, chars=string.ascii_lowercase + string.digits):
         """Generate random string."""
         return ''.join(random.choice(chars) for x in range(size))
