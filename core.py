@@ -7,7 +7,6 @@ import os
 import time
 from threading import Thread
 import json
-import sys
 from Queue import Queue, Empty
 import subprocess
 
@@ -51,10 +50,14 @@ class Felt:
             time.sleep(sec)
             os._exit(0)
 
-        Thread(target=watchdog, args=(self.options.getMaximumExectionTime(),)).start()
+        Thread(
+            target=watchdog,
+            args=(self.options.getMaximumExectionTime(),)
+        ).start()
 
 threadQueue = Queue()
 dataQueue = Queue()
+
 
 class WebworkerService:
     """WebworkerService class."""

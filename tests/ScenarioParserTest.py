@@ -1,6 +1,7 @@
 import unittest
 from models import Scenario
 
+
 class ScenarioParserTest(unittest.TestCase):
 
     def test_single(self):

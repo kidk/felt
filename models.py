@@ -21,7 +21,8 @@ class Options:
     DEFAULT_TEST = False
     DEFAULT_BROWSER = 'phantomjs'
     DEFAULT_SCREENSHOT = False
-    DEFAULT_USERAGENT = 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/10.0'
+    DEFAULT_USERAGENT = 'Mozilla/5.0 (X11; Linux i686; rv:10.0)' + \
+        ' Gecko/20100101 Firefox/10.0'
 
     def __init__(self):
         self._threads = Options.DEFAULT_THREADS
@@ -94,9 +95,10 @@ class Options:
             'userAgent': self.getUserAgent()
         }
 
+
 class Scenario():
     def __init__(self, scenario):
-        self._scenario = scenario;
+        self._scenario = scenario
 
     def preprocessScenario(self):
         """Preprocess the scenario so that the variables are filled in."""
@@ -162,6 +164,10 @@ class Scenario():
 
         return steps
 
-    def getRandomString(self, size=6, chars=string.ascii_lowercase + string.digits):
+    def getRandomString(
+        self,
+        size=6,
+        chars=string.ascii_lowercase + string.digits
+    ):
         """Generate random string."""
         return ''.join(random.choice(chars) for x in range(size))
