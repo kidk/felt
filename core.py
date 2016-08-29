@@ -42,7 +42,7 @@ class Felt:
             self.initWatchdog()
 
         worker = WebworkerService()
-        worker.run(self.scenario, self.options)
+        return worker.run(self.scenario, self.options)
 
     def initWatchdog(self):
         """Init watchdog and kill thread after x seconds."""
@@ -54,6 +54,8 @@ class Felt:
         Thread(target=watchdog, args=(self.options.getMaximumExectionTime(),)).start()
 
 threadQueue = Queue()
+dataQueue = Queue()
+
 class WebworkerService:
     """WebworkerService class."""
 
@@ -74,9 +76,7 @@ class WebworkerService:
             try:
                 while True:
                     threadQueue.get(False)
-
                     self.threadcount -= 1
-
                     threadQueue.task_done()
 
                     # Test mode
@@ -87,6 +87,24 @@ class WebworkerService:
                 pass
 
             time.sleep(0.25)
+
+        # Parse data coming from threads
+        data = []
+        try:
+            while True:
+                rawData = dataQueue.get(False)
+
+                parsedRows = json.loads(rawData)
+                for row in parsedRows:
+                    # We need to decode the step string
+                    row['step'] = json.loads(row['step'])
+                data.append(parsedRows)
+
+                dataQueue.task_done()
+        except Empty:
+            pass
+
+        return data
 
     def startRun(self, scenario, options):
         """Initiate run."""
@@ -119,12 +137,14 @@ class WebworkerService:
         )
 
         # Main loop
+        data = ""
+
         while True:
             nextline = process.stdout.readline()
-            sys.stdout.write(nextline)
-            sys.stdout.flush()
+            data += nextline
 
             if process.poll() is not None:
+                dataQueue.put(data)
                 threadQueue.put("Something")
                 break
 
