@@ -106,6 +106,8 @@ class WebworkerService:
                 dataQueue.task_done()
         except Empty:
             pass
+        except ValueError:
+            raise ValueError("Unable to parse data: " + parsedRows)
 
         return data
 
