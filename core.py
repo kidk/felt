@@ -93,6 +93,7 @@ class WebworkerService:
 
         # Parse data coming from threads
         data = []
+        parsedRows = ""
         try:
             while True:
                 rawData = dataQueue.get(False)
