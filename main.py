@@ -71,8 +71,7 @@ def main(args):
     options.setThreads(args.threads)
 
     # Test option
-    if args.test:
-        options.setThreads(1)
+    options.setTest(args.test)
 
     # Output information
     options.setVerbose(args.verbose)

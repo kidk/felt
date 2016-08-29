@@ -34,6 +34,10 @@ class Options:
         self._userAgent = Options.DEFAULT_USERAGENT
 
     def setThreads(self, threads):
+        if (self._test):
+            print "Error: Only 1 thread allowed in test mode"
+            return
+
         self._threads = threads
 
     def setVerbose(self, verbose):
@@ -53,6 +57,10 @@ class Options:
 
     def setUserAgent(self, userAgent):
         self._userAgent = userAgent
+
+    def setTest(self, test):
+        self._test = test
+        self._threads = 1
 
     def getThreads(self):
         return self._threads
