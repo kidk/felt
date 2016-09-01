@@ -108,6 +108,7 @@ class WebworkerService:
         except Empty:
             pass
         except ValueError:
+            print data
             raise ValueError("Unable to parse data: " + parsedRows)
 
         return data
