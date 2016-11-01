@@ -6,7 +6,6 @@ Handles input parsing, checking parameters and starting the workload run.
 import argparse
 import sys
 import os.path
-import commentjson
 from models import Scenario, Options
 from core import Felt
 
@@ -51,11 +50,6 @@ def main(args):
     if not os.path.isfile(args.scenario):
         print "scenario '%s' not found" % args.scenario
         return
-
-    # Load from file and parse
-    with open(args.scenario, 'r') as content_file:
-        content = content_file.read()
-    scenario = commentjson.loads(content)
 
     # Load in scenario
     scenario = Scenario(args.scenario)

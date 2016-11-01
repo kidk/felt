@@ -2,7 +2,7 @@ import random
 import copy
 import json
 import string
-
+import commentjson
 
 __license__ = "MIT"
 __maintainer__ = "Samuel Vandamme"
@@ -97,8 +97,11 @@ class Options:
 
 
 class Scenario():
-    def __init__(self, scenario):
-        self._scenario = scenario
+    def __init__(self, file):
+        # Load from file and parse
+        with open(file, 'r') as content_file:
+            content = content_file.read()
+        self._scenario = commentjson.loads(content)
 
     def preprocessScenario(self):
         """Preprocess the scenario so that the variables are filled in."""
