@@ -20,6 +20,13 @@
             "value": "isAWESOME"
         },
         {
+            "action" : "sleep",
+            "value" : {
+                "min": 1000,
+                "max": 5000
+            }
+        },
+        {
             "action": "submit",
             "selector": "#loginForm"
         }

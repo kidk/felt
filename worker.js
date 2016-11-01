@@ -337,6 +337,13 @@ function wait_for_element(selector) {
  * @param  {number} value value of sleep in ms.
  */
 function sleep(value) {
+    // Randomly select a sleep time between two values
+    if (value instanceof Object) {
+        var min = value.min;
+        var max = value.max;
+        value = Math.floor(Math.random() * (max - min) ) + min;
+    }
+    
     pageReady = false;
     setTimeout(function() {
         pageReady = true;
