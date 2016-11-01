@@ -219,7 +219,8 @@ function nextAction() {
 /**
  * Set a value for an element.
  * @param {string} selector The selector.
- * @param {string} value    The value.
+ * @param {string} value    The value, when multiple values are available, one
+ * is chosen at random.
  */
 function set_value(selector, value) {
     // Randomly set a value between two values
@@ -229,7 +230,23 @@ function set_value(selector, value) {
     }
 
     page.evaluate(function(selector, value) {
-        document.querySelector(selector).value = value;
+        qselector = document.querySelector(selector);
+        qselector.value = value;
+
+        // Manually dispatch events for front-end frameworks like Angular2
+        var eventType;
+        switch(qselector.tagName) {
+            case "INPUT":
+                eventType = "input";
+                break;
+            default:
+                eventType = "change";
+                break;
+        }
+
+        var event = document.createEvent("UIEvent");
+        event.initUIEvent(eventType, true, true, window, 0);
+        qselector.dispatchEvent(event);
     }, selector, value);
 }
 
@@ -349,7 +366,7 @@ function sleep(value) {
         var max = value.max;
         value = Math.floor(Math.random() * (max - min) ) + min;
     }
-    
+
     pageReady = false;
     setTimeout(function() {
         pageReady = true;
