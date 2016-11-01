@@ -196,6 +196,14 @@ function nextAction() {
         }
 
         if (options.screenshot === true) {
+            // Increase height to capture full page
+            var pageHeight = page.evaluate(function() {
+                return document.body.scrollHeight;
+            });
+            page.viewportSize = { width: 1920, height: pageHeight };
+            page.clipRect = { top: 0, left: 0, width: 1920, height: pageHeight };
+
+            // Take screenshot and save to file
             page.render('screenshot_' + action + '.png');
         }
 
@@ -359,7 +367,7 @@ function check_element_exists(current, checker) {
             var found = checker(elements[i], current)
             if (found === true) {
                 return true;
-            }  
+            }
         }
 
         return false;
