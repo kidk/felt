@@ -32,10 +32,6 @@ class Felt:
             print "################################"
             print "\tFelt (%s)" % __version__
             print "################################"
-            print
-        #    print options
-            print
-            print "################################"
 
         if self.options.getMaximumExectionTime() > 0:
             self.initWatchdog()
