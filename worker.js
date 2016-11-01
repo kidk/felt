@@ -643,6 +643,17 @@ page.onLoadFinished = function(status) {
 };
 
 /**
+ * Handle when a new page is created
+ *
+ * @param {object} newPage New page object created by browser
+ */
+page.onPageCreated = function(newPage) {
+    newPage.onLoadFinished = function(){
+        page = newPage;
+    };
+}
+
+/**
  * This is for printing any logs or errors that may have happened in the page.evaluate function.
  *
  * @param {string} msg The logged message.
