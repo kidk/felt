@@ -222,6 +222,12 @@ function nextAction() {
  * @param {string} value    The value.
  */
 function set_value(selector, value) {
+    // Randomly set a value between two values
+    if (value instanceof Array) {
+        value = value[Math.floor(Math.random() * value.length)];
+        output("Using value for set_value: " + value);
+    }
+
     page.evaluate(function(selector, value) {
         document.querySelector(selector).value = value;
     }, selector, value);
