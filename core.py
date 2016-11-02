@@ -104,8 +104,10 @@ class WebworkerService:
         except Empty:
             pass
         except ValueError:
-            print data
-            raise ValueError("Unable to parse data: " + parsedRows)
+            if options.isDebug():
+                raise ValueError("Unable to parse data coming from worker: " + rawData)
+            else:
+                raise ValueError("Unable to parse data coming from worker")
 
         return data
 
