@@ -270,20 +270,31 @@ function click(selector) {
     var returnedValue = page.evaluate(function(selector) {
         var message = '';
         var elements = document.querySelectorAll(selector);
-        if (elements !== null && elements.length === 1) {
+
+        /**
+         * Click element helper.
+         *
+         * @param  {string} element The element that will be clicked.
+         */
+        function click_element(element) {
             // TODO: click on an <a> element is not supported in all browsers by default.
             // find a more clean solution.
-            if (typeof elements[0].click === 'function') {
-                elements[0].click();
-            } else if (elements[0].fireEvent) {
-                elements[0].fireEvent('onclick');
+            if (typeof element.click === 'function') {
+                element.click();
+            } else if (element.fireEvent) {
+                return element.fireEvent('onclick');
             } else {
                 var evObj = document.createEvent('Events');
                 evObj.initEvent('click', true, false);
-                elements[0].dispatchEvent(evObj);
+                element.dispatchEvent(evObj);
             }
+        }
+
+        if (elements !== null && elements.length === 1) {
+            click_element(elements[0]);
         } else if (elements !== null && elements.length > 1) {
             message = 'Selector ' + selector + ' matches more than 1 element, clicking the first element.';
+            click_element(elements[0]);
         } else {
             message = 'Selector ' + selector + ' does not match any element in the dom';
         }
