@@ -105,7 +105,9 @@ class WebworkerService:
             pass
         except ValueError:
             if options.isDebug():
-                raise ValueError("Unable to parse data coming from worker: " + rawData)
+                raise ValueError(
+                    "Unable to parse data coming from worker: " + rawData
+                )
             else:
                 raise ValueError("Unable to parse data coming from worker")
 
