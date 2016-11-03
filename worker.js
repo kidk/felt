@@ -196,6 +196,14 @@ function nextAction() {
         }
 
         if (options.screenshot === true) {
+            // Increase height to capture full page
+            var pageHeight = page.evaluate(function() {
+                return document.body.scrollHeight;
+            });
+            page.viewportSize = { width: 1920, height: pageHeight };
+            page.clipRect = { top: 0, left: 0, width: 1920, height: pageHeight };
+
+            // Take screenshot and save to file
             page.render('screenshot_' + action + '.png');
         }
 
@@ -211,11 +219,34 @@ function nextAction() {
 /**
  * Set a value for an element.
  * @param {string} selector The selector.
- * @param {string} value    The value.
+ * @param {string} value    The value, when multiple values are available, one
+ * is chosen at random.
  */
 function set_value(selector, value) {
+    // Randomly set a value between two values
+    if (value instanceof Array) {
+        value = value[Math.floor(Math.random() * value.length)];
+        output("Using value for set_value: " + value);
+    }
+
     page.evaluate(function(selector, value) {
-        document.querySelector(selector).value = value;
+        qselector = document.querySelector(selector);
+        qselector.value = value;
+
+        // Manually dispatch events for front-end frameworks like Angular2
+        var eventType;
+        switch(qselector.tagName) {
+            case "INPUT":
+                eventType = "input";
+                break;
+            default:
+                eventType = "change";
+                break;
+        }
+
+        var event = document.createEvent("UIEvent");
+        event.initUIEvent(eventType, true, true, window, 0);
+        qselector.dispatchEvent(event);
     }, selector, value);
 }
 
@@ -239,20 +270,31 @@ function click(selector) {
     var returnedValue = page.evaluate(function(selector) {
         var message = '';
         var elements = document.querySelectorAll(selector);
-        if (elements !== null && elements.length === 1) {
+
+        /**
+         * Click element helper.
+         *
+         * @param  {string} element The element that will be clicked.
+         */
+        function click_element(element) {
             // TODO: click on an <a> element is not supported in all browsers by default.
             // find a more clean solution.
-            if (typeof elements[0].click === 'function') {
-                elements[0].click();
-            } else if (elements[0].fireEvent) {
-                elements[0].fireEvent('onclick');
+            if (typeof element.click === 'function') {
+                element.click();
+            } else if (element.fireEvent) {
+                return element.fireEvent('onclick');
             } else {
                 var evObj = document.createEvent('Events');
                 evObj.initEvent('click', true, false);
-                elements[0].dispatchEvent(evObj);
+                element.dispatchEvent(evObj);
             }
+        }
+
+        if (elements !== null && elements.length === 1) {
+            click_element(elements[0]);
         } else if (elements !== null && elements.length > 1) {
             message = 'Selector ' + selector + ' matches more than 1 element, clicking the first element.';
+            click_element(elements[0]);
         } else {
             message = 'Selector ' + selector + ' does not match any element in the dom';
         }
@@ -329,6 +371,13 @@ function wait_for_element(selector) {
  * @param  {number} value value of sleep in ms.
  */
 function sleep(value) {
+    // Randomly select a sleep time between two values
+    if (value instanceof Object) {
+        var min = value.min;
+        var max = value.max;
+        value = Math.floor(Math.random() * (max - min) ) + min;
+    }
+
     pageReady = false;
     setTimeout(function() {
         pageReady = true;
@@ -359,7 +408,7 @@ function check_element_exists(current, checker) {
             var found = checker(elements[i], current)
             if (found === true) {
                 return true;
-            }  
+            }
         }
 
         return false;
@@ -603,6 +652,17 @@ page.onLoadFinished = function(status) {
         }
     }
 };
+
+/**
+ * Handle when a new page is created
+ *
+ * @param {object} newPage New page object created by browser
+ */
+page.onPageCreated = function(newPage) {
+    newPage.onLoadFinished = function(){
+        page = newPage;
+    };
+}
 
 /**
  * This is for printing any logs or errors that may have happened in the page.evaluate function.
