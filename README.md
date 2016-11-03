@@ -1,3 +1,5 @@
+![Build status](https://travis-ci.org/kidk/felt.svg?branch=master)
+
 # Felt
 Front end load testing with PhantomJS/SlimerJS, sponsored by [CoScale](http://www.coscale.com)
 
