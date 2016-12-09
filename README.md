@@ -63,6 +63,49 @@ optional arguments:
   --screenshot       save screenshot per step
 ```
 
+## Actions list
+
+* `open_url` - Open browser and navigate to url.
+
+  Attributes:
+  * `value`: Url to open
+
+* `set_value` - Set value attribute in an element
+  
+  Attributes:
+  * `selector` - Value for `querySelector`
+  * `value` - Value to insert into element
+
+* `submit` - Send submit event to element
+  
+  Attributes:
+  * `selector` - Value for `querySelector`
+
+* `click` - Send click event to element (if selector returns multiple elements, first one is clicked)
+  
+  Attributes:
+  * `selector` - Value for `querySelectorAll`
+
+* `click_one` - Send click event to random selected element
+  
+  Attributes:
+  * `selector` - Value for `querySelectorAll`
+
+* `sleep` - Wait for x miliseconds
+  
+  Attributes:
+  * `value` - Amount in ms you want function to wait or object with min, max to wait a random time between min and max
+
+* `wait_for_element` - Wait for element to appear in browser
+  
+  Attributes:
+  * `selector` - Value for `querySelector`
+
+* `check_element_exists` - Check if element is present and contains content
+  
+  Attributes:
+  * `selector` - Value for `querySelector`
+
 ## Development
 Included in this repository is a [Vagrant](https://www.vagrantup.com/) file which you can use to develop Felt locally. Please don't hesitate to submit bugs, feature requests or pull requests. 
 
