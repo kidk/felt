@@ -66,4 +66,5 @@ optional arguments:
 ## Development
 Included in this repository is a [Vagrant](https://www.vagrantup.com/) file which you can use to develop Felt locally. Please don't hesitate to submit bugs, feature requests or pull requests. 
 
+## Sponsored by CoScale
 <img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo" />
