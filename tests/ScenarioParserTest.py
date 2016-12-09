@@ -90,5 +90,6 @@ class ScenarioParserTest(unittest.TestCase):
         self.assertEqual(element["action"], "set_value")
         self.assertEqual(element["selector"], "input#random")
 
+
 if __name__ == '__main__':
     unittest.main()

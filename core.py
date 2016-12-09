@@ -51,6 +51,8 @@ class Felt:
             args=(self.options.getMaximumExectionTime(),)
         ).start()
 
+
+# Initiate thread and dataqueue
 threadQueue = Queue()
 dataQueue = Queue()
 
