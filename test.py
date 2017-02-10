@@ -3,7 +3,7 @@
 import unittest
 import sys
 
-print "Starting test run"
+print("Starting test run")
 
 loader = unittest.TestLoader()
 tests = loader.discover('tests', pattern='*.py')

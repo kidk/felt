@@ -12,7 +12,7 @@ class ScenarioParserTest(unittest.TestCase):
             "steps": [
                 {
                     "action": "open_url",
-                    "value": "http://felt.sava.be/"
+                    "value": "https://felt.sava.be/"
                 },
                 {
                     "action": "click",
@@ -32,9 +32,9 @@ class ScenarioParserTest(unittest.TestCase):
             result[0]['time'],
             result[0]['end'] - result[0]['start']
         )
-        self.assertEquals('http://felt.sava.be/', result[0]['url'])
+        self.assertEquals('https://felt.sava.be/', result[0]['url'])
         self.assertEquals('open_url', result[0]['step']['action'])
-        self.assertEquals('http://felt.sava.be/', result[0]['step']['value'])
+        self.assertEquals('https://felt.sava.be/', result[0]['step']['value'])
 
         # Check action 2
         self.assertLess(result[1]['start'], result[1]['end'])
@@ -43,7 +43,10 @@ class ScenarioParserTest(unittest.TestCase):
             result[1]['time'],
             result[1]['end'] - result[1]['start']
         )
-        self.assertEquals('http://felt.sava.be/settings.php', result[1]['url'])
+        self.assertEquals(
+            'https://felt.sava.be/settings.php',
+            result[1]['url']
+        )
         self.assertEquals('click', result[1]['step']['action'])
         self.assertEquals(
             '#navbar > ul > li:nth-child(2) > a',

@@ -4,10 +4,15 @@ Handles browser instances
 """
 
 import os
+import sys
 import time
 from threading import Thread
 import json
-from Queue import Queue, Empty
+from multiprocessing import Queue
+try:
+    from queue import Empty
+except ImportError:
+    from Queue import Empty
 import subprocess
 
 __license__ = "MIT"
@@ -29,9 +34,9 @@ class Felt:
     def run(self):
         """Start Felt run and execute watchdog."""
         if self.options.isVerbose():
-            print "################################"
-            print "\tFelt (%s)" % __version__
-            print "################################"
+            print("################################")
+            print("\tFelt (%s)" % __version__)
+            print("################################")
 
         if self.options.getMaximumExectionTime() > 0:
             self.initWatchdog()
@@ -78,7 +83,6 @@ class WebworkerService:
                 while True:
                     threadQueue.get(False)
                     self.threadcount -= 1
-                    threadQueue.task_done()
 
                     # Test mode
                     if options.isTest():
@@ -101,8 +105,6 @@ class WebworkerService:
                     # We need to decode the step string
                     row['step'] = json.loads(row['step'])
                 data.append(parsedRows)
-
-                dataQueue.task_done()
         except Empty:
             pass
         except ValueError:
@@ -137,7 +139,7 @@ class WebworkerService:
             json.dumps(scenario.preprocessScenario()),
             json.dumps(options.getRunnerOptions())
         ]
-        print command
+        print(command)
         process = subprocess.Popen(
             command,
             shell=False,
@@ -150,7 +152,7 @@ class WebworkerService:
 
         while True:
             nextline = process.stdout.readline()
-            data += nextline
+            data += nextline.decode(sys.stdout.encoding)
 
             if process.poll() is not None:
                 dataQueue.put(data)
