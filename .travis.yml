@@ -20,7 +20,7 @@ before_install:
   - "phantomjs --version"
 
 install:
-  - "pip install flake8 --use-mirrors"
+  - "pip install flake8"
 
 before_script: "flake8 --ignore=D203 ."
 
