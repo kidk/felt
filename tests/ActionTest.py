@@ -44,7 +44,7 @@ class ScenarioParserTest(unittest.TestCase):
             result[1]['end'] - result[1]['start']
         )
         self.assertEquals(
-            'https://felt.sava.be/settings.php', 
+            'https://felt.sava.be/settings.php',
             result[1]['url']
         )
         self.assertEquals('click', result[1]['step']['action'])
