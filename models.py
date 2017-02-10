@@ -36,7 +36,7 @@ class Options:
 
     def setThreads(self, threads):
         if (self._test):
-            print "Error: Only 1 thread allowed in test mode"
+            print("Error: Only 1 thread allowed in test mode")
             return
 
         self._threads = threads
@@ -129,7 +129,7 @@ class Scenario():
             # Error message in case unknown type
             else:
                 value = None
-                print 'Unknown variable type `' + variable['type'] + '`'
+                print('Unknown variable type `%s`' % variable['type'])
 
             # If valid variable
             if value is not None:

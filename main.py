@@ -49,7 +49,7 @@ def main(args):
 
     # Check if scenario exists
     if not os.path.isfile(args.scenario):
-        print "scenario '%s' not found" % args.scenario
+        print("scenario '%s' not found" % args.scenario)
         return
 
     # Load from file and parse

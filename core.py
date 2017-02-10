@@ -29,9 +29,9 @@ class Felt:
     def run(self):
         """Start Felt run and execute watchdog."""
         if self.options.isVerbose():
-            print "################################"
-            print "\tFelt (%s)" % __version__
-            print "################################"
+            print("################################")
+            print("\tFelt (%s)" % __version__)
+            print("################################")
 
         if self.options.getMaximumExectionTime() > 0:
             self.initWatchdog()
@@ -137,7 +137,7 @@ class WebworkerService:
             json.dumps(scenario.preprocessScenario()),
             json.dumps(options.getRunnerOptions())
         ]
-        print command
+        print(command)
         process = subprocess.Popen(
             command,
             shell=False,
