@@ -1,5 +1,8 @@
 import platform
-import urllib
+try:
+    from urllib import urlretrieve
+except ImportError:
+    from urllib.request import urlretrieve
 import zipfile
 import tarfile
 import stat
