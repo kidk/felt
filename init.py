@@ -78,7 +78,10 @@ def init(options):
         os.chmod(path_phantomjs, stats.st_mode | stat.S_IEXEC)
 
         print("Cleaning up")
-        os.remove("bin/phantomjs.zip")
+        if operatingsystem == "Linux":
+            os.remove("bin/phantomjs.tar.bz2")
+        else:
+            os.remove("bin/phantomjs.zip")
 
     # SlimerJS
     if slimerjs:
