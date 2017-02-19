@@ -52,18 +52,21 @@ def main(args):
     parser.add_argument('scenario')
     args = parser.parse_args()
 
-    # Check if scenario exists
-    if not os.path.isfile(args.scenario):
+    # Load scenarios from disk
+    scenarios = []
+    if os.path.isfile(args.scenario):
+        scenarios.append(loadScenario(args.scenario))
+    elif os.path.isdir(args.scenario):
+        for file in os.listdir(args.scenario):
+            if file.endswith(".json"):
+                scenarios.append(
+                    loadScenario(
+                        os.path.join(args.scenario, file)
+                    )
+                )
+    else:
         print("scenario '%s' not found" % args.scenario)
         return
-
-    # Load from file and parse
-    with open(args.scenario, 'r') as content_file:
-        content = content_file.read()
-    scenario = commentjson.loads(content)
-
-    # Load in scenario
-    scenario = Scenario(scenario)
 
     # Parse options
     options = Options()
@@ -97,10 +100,18 @@ def main(args):
     init(options)
 
     # Create new Felt class
-    felt = Felt(options, scenario)
+    felt = Felt(options, scenarios)
 
     # Start worker
     felt.run()
+
+
+def loadScenario(file):
+    with open(file, 'r') as content_file:
+        content = content_file.read()
+
+    json = commentjson.loads(content)
+    return Scenario(json)
 
 
 if __name__ == "__main__":

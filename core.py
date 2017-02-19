@@ -65,7 +65,7 @@ dataQueue = Queue()
 class WebworkerService:
     """WebworkerService class."""
 
-    def run(self, scenario, options):
+    def run(self, scenarios, options):
         """Run function.
 
         Init run of main workload loop
@@ -73,10 +73,11 @@ class WebworkerService:
         self.threadcount = 0
         self.threadstarted = 0
         self.running = True
+        self.scenario = 0
 
         # Start new one every minute
         while self.running:
-            self.startRun(scenario, options)
+            self.startRun(scenarios, options)
 
             # Keep track of running threads
             try:
@@ -117,7 +118,7 @@ class WebworkerService:
 
         return data
 
-    def startRun(self, scenario, options):
+    def startRun(self, scenarios, options):
         """Initiate run."""
         if (options.getThreads() > self.threadcount):
             # Start threads
@@ -126,8 +127,17 @@ class WebworkerService:
                 self.threadstarted += 1
                 Thread(
                     target=WebworkerService.execute,
-                    args=(self.threadstarted, scenario, options, )
+                    args=(
+                        self.threadstarted,
+                        scenarios[self.scenario],
+                        options,
+                    )
                 ).start()
+
+                # Go to next scenario
+                self.scenario += 1
+                if self.scenario > len(scenarios) - 1:
+                    self.scenario = 0
 
     @staticmethod
     def execute(threadId, scenario, options):
