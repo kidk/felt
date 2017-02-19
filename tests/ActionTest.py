@@ -59,7 +59,7 @@ class ScenarioParserTest(unittest.TestCase):
         options.setTest(True)
         init(options)
 
-        core = Felt(options, scenario)
+        core = Felt(options, [scenario])
         result = core.run()
 
         self.assertEqual(1, len(result))

@@ -1,3 +1,5 @@
+// This scenario has currently been disabled until a test environment can be setup
+
 // This scenario is written for a magento application with sample data v1.9
 // You can follow the steps in the documentation to install it and test this scenario
 // http://devdocs.magento.com/guides/m1x/ce18-ee113/ht_magento-ce-sample.data.html
