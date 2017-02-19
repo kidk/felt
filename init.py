@@ -1,6 +1,7 @@
 import platform
 import urllib
 import zipfile
+import tarfile
 import stat
 import os
 
@@ -26,7 +27,7 @@ def init(options):
             "phantomjs/downloads/phantomjs-2.1.1-macosx.zip"
     elif operatingsystem == "Linux":
         download_phantomjs = "https://bitbucket.org/ariya/" + \
-            "phantomjs/downloads/phantomjs-2.1.1-linux.zip"
+            "phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2"
     else:
         raise Exception("Unknown operating system: " + operatingsystem)
 
@@ -54,10 +55,16 @@ def init(options):
             os.makedirs("bin/phantomjs")
 
         print("Downloading phantomjs")
-        urllib.urlretrieve(download_phantomjs, "bin/phantomjs.zip")
+        if operatingsystem == "Linux":
+            urllib.urlretrieve(download_phantomjs, "bin/phantomjs.tar.bz2")
+        else:
+            urllib.urlretrieve(download_phantomjs, "bin/phantomjs.zip")
 
         print("Unzipping phantomjs")
-        zip_ref = zipfile.ZipFile("bin/phantomjs.zip", 'r')
+        if operatingsystem == "Linux":
+            zip_ref = tarfile.open("bin/phantomjs.tar.bz2", "r:bz2")
+        else:
+            zip_ref = zipfile.ZipFile("bin/phantomjs.zip", 'r')
         zip_ref.extractall("bin/phantomjs")
         zip_ref.close()
 
