@@ -33,6 +33,10 @@ class Options:
         self._browser = Options.DEFAULT_BROWSER
         self._screenshot = Options.DEFAULT_SCREENSHOT
         self._userAgent = Options.DEFAULT_USERAGENT
+        self._browserPath = {
+            'phantomjs': "",
+            'slimerjs': ""
+        }
 
     def setThreads(self, threads):
         if (self._test):
@@ -62,6 +66,9 @@ class Options:
     def setTest(self, test):
         self._test = test
         self._threads = 1
+
+    def setBrowserPath(self, browser, path):
+        self._browserPath[browser] = path
 
     def getThreads(self):
         return self._threads
@@ -94,6 +101,9 @@ class Options:
             'screenshot': self.getScreenshot(),
             'userAgent': self.getUserAgent()
         }
+
+    def getBrowserPath(self):
+        return self._browserPath[self.getBrowser()]
 
 
 class Scenario():
