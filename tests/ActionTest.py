@@ -2,6 +2,7 @@ import unittest
 
 from core import Felt
 from models import Scenario, Options
+from init import init
 
 
 class ScenarioParserTest(unittest.TestCase):
@@ -56,6 +57,7 @@ class ScenarioParserTest(unittest.TestCase):
     def runTest(self, scenario):
         options = Options()
         options.setTest(True)
+        init(options)
 
         core = Felt(options, scenario)
         result = core.run()
