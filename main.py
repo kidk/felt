@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Main file for starting Felt.
 
 Handles input parsing, checking parameters and starting the workload run.
