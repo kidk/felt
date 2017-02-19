@@ -41,48 +41,48 @@ def init(options):
 
     # PhantomJS
     if phantomjs:
-        print "Creating directories"
+        print("Creating directories")
         if not os.path.exists("bin/"):
             os.makedirs("bin/")
         if phantomjs and not os.path.exists("bin/phantomjs"):
             os.makedirs("bin/phantomjs")
 
-        print "Downloading phantomjs"
+        print("Downloading phantomjs")
         urllib.urlretrieve(download_phantomjs, "bin/phantomjs.zip")
 
-        print "Unzipping phantomjs"
+        print("Unzipping phantomjs")
         zip_ref = zipfile.ZipFile("bin/phantomjs.zip", 'r')
         zip_ref.extractall("bin/phantomjs")
         zip_ref.close()
 
-        print "Setting permissions lost from unzip"
+        print("Setting permissions lost from unzip")
         stats = os.stat(path_phantomjs)
         os.chmod(path_phantomjs, stats.st_mode | stat.S_IEXEC)
 
-        print "Cleaning up"
+        print("Cleaning up")
         os.remove("bin/phantomjs.zip")
 
     # SlimerJS
     if slimerjs:
-        print "Creating directories"
+        print("Creating directories")
         if not os.path.exists("bin/"):
             os.makedirs("bin/")
         if slimerjs and not os.path.exists("bin/slimerjs"):
             os.makedirs("bin/slimerjs")
 
-        print "Downloading slimerjs"
+        print("Downloading slimerjs")
         urllib.urlretrieve(download_slimerjs, "bin/slimerjs.zip")
 
-        print "Unzipping slimerjs"
+        print("Unzipping slimerjs")
         zip_ref = zipfile.ZipFile("bin/slimerjs.zip", 'r')
         zip_ref.extractall("bin/slimerjs")
         zip_ref.close()
 
-        print "Setting permissions lost from unzip"
+        print("Setting permissions lost from unzip")
         stats = os.stat(path_slimerjs)
         os.chmod(path_slimerjs, stats.st_mode | stat.S_IEXEC)
 
-        print "Cleaning up"
+        print("Cleaning up")
         os.remove("bin/slimerjs.zip")
 
     # Set location in options
