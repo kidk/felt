@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Test file for Felt."""
 
 import unittest
