@@ -24,6 +24,12 @@ def init(options):
     if operatingsystem == "Darwin":
         download_phantomjs = "https://bitbucket.org/ariya/" + \
             "phantomjs/downloads/phantomjs-2.1.1-macosx.zip"
+    elif operatingsystem == "Linux":
+        download_phantomjs = "https://bitbucket.org/ariya/" + \
+            "phantomjs/downloads/phantomjs-2.1.1-linux.zip"
+    else:
+        raise Exception("Unknown operating system: " + operatingsystem)
+
     download_slimerjs = "http://download.slimerjs.org/releases/" + \
         "0.10.2/slimerjs-0.10.2.zip"
 
