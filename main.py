@@ -6,10 +6,11 @@ Handles input parsing, checking parameters and starting the workload run.
 
 import argparse
 import sys
-import os.path
+import os
 import commentjson
 from models import Scenario, Options
 from core import Felt
+from init import init
 
 __license__ = "MIT"
 __maintainer__ = "Samuel Vandamme"
@@ -45,6 +46,9 @@ def main(args):
     parser.add_argument('--max-time', type=int,
                         default=Options.DEFAULT_MAXTIME, dest='maxTime',
                         help="provide a maximum runtime")
+    parser.add_argument('--init', type=str, default="phantomjs", dest="init",
+                        choices=['all', 'phantomjs', 'slimerjs'],
+                        help="initiate environment and download browsers")
     parser.add_argument('scenario')
     args = parser.parse_args()
 
@@ -88,6 +92,9 @@ def main(args):
 
     # Create watchdog thread
     options.setMaximumExectionTime(args.maxTime)
+
+    # Initiate environment for work
+    init(options)
 
     # Create new Felt class
     felt = Felt(options, scenario)

@@ -133,7 +133,7 @@ class WebworkerService:
     def execute(threadId, scenario, options):
         """Execute browser thread with options."""
         command = [
-            options.getBrowser(),
+            options.getBrowserPath(),
             'worker.js',
             str(threadId),
             json.dumps(scenario.preprocessScenario()),
