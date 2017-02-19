@@ -61,9 +61,9 @@ def init(options):
 
         print("Downloading phantomjs")
         if operatingsystem == "Linux":
-            urllib.urlretrieve(download_phantomjs, "bin/phantomjs.tar.bz2")
+            urlretrieve(download_phantomjs, "bin/phantomjs.tar.bz2")
         else:
-            urllib.urlretrieve(download_phantomjs, "bin/phantomjs.zip")
+            urlretrieve(download_phantomjs, "bin/phantomjs.zip")
 
         print("Unzipping phantomjs")
         if operatingsystem == "Linux":
@@ -89,7 +89,7 @@ def init(options):
             os.makedirs("bin/slimerjs")
 
         print("Downloading slimerjs")
-        urllib.urlretrieve(download_slimerjs, "bin/slimerjs.zip")
+        urlretrieve(download_slimerjs, "bin/slimerjs.zip")
 
         print("Unzipping slimerjs")
         zip_ref = zipfile.ZipFile("bin/slimerjs.zip", 'r')
