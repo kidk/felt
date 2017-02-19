@@ -18,16 +18,18 @@ def init(options):
     phantomjs = False
     slimerjs = False
 
-    path_phantomjs = "bin/phantomjs/phantomjs-2.1.1-macosx/bin/phantomjs"
     path_slimerjs = "bin/slimerjs/slimerjs-0.10.2/slimerjs.py"
 
     download_phantomjs = ""
     if operatingsystem == "Darwin":
         download_phantomjs = "https://bitbucket.org/ariya/" + \
             "phantomjs/downloads/phantomjs-2.1.1-macosx.zip"
+        path_phantomjs = "bin/phantomjs/phantomjs-2.1.1-macosx/bin/phantomjs"
     elif operatingsystem == "Linux":
         download_phantomjs = "https://bitbucket.org/ariya/" + \
             "phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2"
+        path_phantomjs = "bin/phantomjs/phantomjs-2.1.1-linux-x86_64/" + \
+            "bin/phantomjs"
     else:
         raise Exception("Unknown operating system: " + operatingsystem)
 
