@@ -106,6 +106,7 @@ def main(args):
     # Start worker
     felt.run()
 
+
 def init(options):
     """Init function.
 
@@ -123,11 +124,15 @@ def init(options):
 
     download_phantomjs = ""
     if operatingsystem == "Darwin":
-        download_phantomjs = "https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-macosx.zip"
-    download_slimerjs = "http://download.slimerjs.org/releases/0.10.2/slimerjs-0.10.2.zip"
-    
-    if options.getBrowser() == 'phantomjs': phantomjs = True
-    if options.getBrowser() == 'slimerjs': slimerjs = True
+        download_phantomjs = "https://bitbucket.org/ariya/" + \
+            "phantomjs/downloads/phantomjs-2.1.1-macosx.zip"
+    download_slimerjs = "http://download.slimerjs.org/releases/" + \
+        "0.10.2/slimerjs-0.10.2.zip"
+
+    if options.getBrowser() == 'phantomjs':
+        phantomjs = True
+    if options.getBrowser() == 'slimerjs':
+        slimerjs = True
 
     # Check if we have installations available
     if os.path.isfile(path_phantomjs):
@@ -185,6 +190,7 @@ def init(options):
     # Set location in options
     options.setBrowserPath('phantomjs', path_phantomjs)
     options.setBrowserPath('slimerjs', path_slimerjs)
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
