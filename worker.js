@@ -50,9 +50,9 @@ var defaultUrl = 'about:blank';
  */
 uid = system.args[1];
 scenario = JSON.parse(system.args[2]);
-arguments = JSON.parse(system.args[3]);
-for (var id in arguments) {
-    options[id] = arguments[id];
+args = JSON.parse(system.args[3]);
+for (var id in args) {
+    options[id] = args[id];
 }
 
 /**
@@ -131,7 +131,7 @@ var exited = false;
 function exit() {
     if (!exited) {
         exited = true;
-        console.log(JSON.stringify(results, null, 2));
+        log("results", results);
 
         phantom.exit(0);
     }
@@ -192,7 +192,11 @@ function nextAction() {
                 break;
 
             default:
-                warn('unknown action: ' + JSON.stringify(current));
+                warn({
+                    'source': 'nextAction',
+                    'message': 'Unknown action',
+                    'action': current
+                });
         }
 
         if (options.screenshot === true) {
@@ -303,7 +307,10 @@ function click(selector) {
     }, selector);
 
     if (returnedValue !== '') {
-        warn(returnedValue);
+        warn({
+            'source': 'click',
+            'message': returnedValue
+        });
     }
 }
 
@@ -327,7 +334,10 @@ function click_one(selector) {
     }, selector);
 
     if (returnedValue !== '') {
-        warn(returnedValue);
+        warn({
+            'source': 'click_one',
+            'message': returnedValue
+        });
     }
 }
 
@@ -416,6 +426,7 @@ function check_element_exists(current, checker) {
     }, current, checker);
 
     results.push({
+        'type': "check_element_exists",
         'success': found,
         'url': requestUrl,
         'step': JSON.stringify(current).replace(new RegExp('"', 'g'), '"')
@@ -448,13 +459,28 @@ nextAction();
  */
 
 /**
+ * Function used for output
+ * 
+ * @param  {string} type The message type.
+ * @param  {string} message The message.
+ */
+function log(type, message) {
+    console.log(JSON.stringify({
+        "type": type,
+        "uid": pad(uid),
+        "timestamp": Date.now(),
+        "data": message
+    }));
+}
+
+/**
  * Function used for output verbose logs.
  *
  * @param  {string} message The message.
  */
 function output(message) {
     if (options['verbose']) {
-        console.log(pad(uid) + '\t' + Date.now() + ':\t' + message);
+        log('output', message);
     }
 }
 
@@ -465,7 +491,7 @@ function output(message) {
  */
 function debug(message) {
     if (options['debug']) {
-        console.log(pad(uid) + '\t' + Date.now() + ':\t' + message);
+        log('debug', message);
     }
 }
 
@@ -476,7 +502,7 @@ function debug(message) {
  */
 function warn(message) {
     if (options['verbose']) {
-        console.log(textFormatting.WARNING + pad(uid) + '\t' + Date.now() + ':\t' + message + textFormatting.ENDC);
+        log('verbose', message);
     }
 }
 
@@ -487,7 +513,7 @@ function warn(message) {
  */
 function error(message) {
     if (options['verbose']) {
-        console.log(textFormatting.FAIL + pad(uid) + '\t' + Date.now() + ':\t' + message + textFormatting.ENDC);
+        log('error', message)
     }
 }
 
@@ -516,7 +542,11 @@ function pad(num, size) {
  * @param  {Object} trace The trace.
  */
 page.onError = function(msg, trace) {
-    error('Error: ' + msg + '\n' + JSON.stringify(trace));
+    error({
+        'source': "onError",
+        'message': msg,
+        'trace': trace
+    });
 };
 
 /**
@@ -525,7 +555,11 @@ page.onError = function(msg, trace) {
  * @param {Object} networkRequest The network request.
  */
 page.onResourceRequested = function(requestData, networkRequest) {
-    debug('onResourceRequested: \n' + JSON.stringify(requestData, networkRequest));
+    debug({
+        'source': "onResourceRequested",
+        'requestData': requestData,
+        'networkRequest': networkRequest
+    });
 
     resources[requestData.id] = {
         method: requestData.method,
@@ -540,7 +574,10 @@ page.onResourceRequested = function(requestData, networkRequest) {
  * @param {Object} response The response.
  */
 page.onResourceReceived = function(response) {
-    debug('onResourceReceived: \n' + JSON.stringify(response));
+    debug({
+        'source': 'onResourceReceived',
+        'response': response
+    });
 
     if (resources[response.id] !== undefined) {
         resources[response.id].status = 'done';
@@ -557,8 +594,10 @@ page.onResourceReceived = function(response) {
  * @param {Object} resourceError The resource that produced the error.
  */
 page.onResourceError = function(resourceError) {
-    debug('onResourceError: \n' + JSON.stringify(resourceError));
-
+    debug({
+        'source': 'onResourceError',
+        'resourceError': resourceError
+    });
     if (resources[resourceError.id] !== undefined) {
         resources[resourceError.id].status = 'error';
     } else {
@@ -573,7 +612,10 @@ page.onResourceError = function(resourceError) {
  * @param {Object} request The request that timedout.
  */
 page.onResourceTimeout = function(request) {
-    debug('onResourceTimeout: \n' + JSON.stringify(request));
+    debug({
+        'source': 'onResourceTimeout',
+        'request': request
+    });
 
     if (resources[response.id] !== undefined) {
         resources[response.id].status = 'timeout';
@@ -590,7 +632,10 @@ page.onResourceTimeout = function(request) {
  * @param {string} targetUrl The target url.
  */
 page.onUrlChanged = function(targetUrl) {
-    debug('onUrlChanged: \n TargetUrl: ' + targetUrl);
+    debug({
+        'source': 'onUrlChanged',
+        'targetUrl': targetUrl
+    });
 
     requestUrl = targetUrl;
 };
@@ -606,7 +651,10 @@ var pageInitializetime;
  * Handle when the page is initialized.
  */
 page.onInitialized = function() {
-    debug('onInitialized ' + requestUrl);
+    debug({
+        'source': 'onInitialized',
+        'requestUrl': requestUrl
+    })
 
     // Increase requests
     requests += 1;
@@ -625,11 +673,16 @@ page.onInitialized = function() {
  * @param {string} status The status is either 'suceess' or 'fail'
  */
 page.onLoadFinished = function(status) {
-    debug('onLoadFinished ' + requestUrl + ': \n Status: ' + status);
+    debug({
+        'source': 'onLoadFinished',
+        'requestUrl': requestUrl,
+        'status': status
+    });
 
     pageReady = true;
     if (status !== 'success') {
         results.push({
+            'type': "onLoadFinished",
             'url': requestUrl,
             'success': false,
             'step': JSON.stringify(scenario[action - 1]).replace(new RegExp('"', 'g'), '"')
@@ -641,6 +694,7 @@ page.onLoadFinished = function(status) {
         if (pageInitializetime > 0) {
             var pageLoadFinishTime = Date.now();
             results.push({
+                'type': "onLoadFinished",
                 'url': requestUrl,
                 'success': true,
                 'start': pageInitializetime,
@@ -670,5 +724,8 @@ page.onPageCreated = function(newPage) {
  * @param {string} msg The logged message.
  */
 page.onConsoleMessage = function(msg) {
-    console.log(msg);
+    debug({
+        'source': 'onConsoleMessage',
+        'message': msg
+    })
 };

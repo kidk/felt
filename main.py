@@ -46,9 +46,8 @@ def main(args):
     parser.add_argument('--max-time', type=int,
                         default=Options.DEFAULT_MAXTIME, dest='maxTime',
                         help="provide a maximum runtime")
-    parser.add_argument('--init', type=str, default="phantomjs", dest="init",
-                        choices=['all', 'phantomjs', 'slimerjs'],
-                        help="initiate environment and download browsers")
+    parser.add_argument('--init', action='store_true',
+                        help="only download browsers")
     parser.add_argument('scenario')
     args = parser.parse_args()
 
@@ -98,12 +97,14 @@ def main(args):
 
     # Initiate environment for work
     init(options)
+    if args.init:
+        return
 
     # Create new Felt class
     felt = Felt(options, scenarios)
 
     # Start worker
-    felt.run()
+    print(felt.run())
 
 
 def loadScenario(file):
