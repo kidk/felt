@@ -25,28 +25,23 @@ Felt is a front-end load tester. It generates load by running a lot of browser i
 
 ## Requirements
 
-* Tested on Python 2.7.10
+* Tested on Python 2.7, 3.3, 3.4 and 3.5
 * Unix based operating system
-* Local install of [PhantomJS](http://phantomjs.org/download.html) or [SlimerJS](https://slimerjs.org/download.html) available in PATH
-* Install commentjson (`pip install commentjson`)
+* Install pip requirements (`pip install -r requirements.txt`)
 
 ## Quick start
 
 1. `git clone https://github.com/kidk/felt.git`
 1. `cd felt`
-1. Download PhantomJS from http://phantomjs.org/download.html
-1. Unzip and move PhantomJS executable into felt directory
-
-    The felt directory should look something like this:
-        $ ls
-        LICENSE		README.md	js		main.py		phantomjs
-1. pip install commentjson
+1. `pip install -r requirements.txt`
 1. `python main.py --verbose examples/basic.json`
 1. `ctrl + c` to stop
 
 ## Usage
 ```
-usage: main.py [-h] [--debug] [--verbose] [--threads THREADS] [--test] [--screenshot]
+usage: main.py [-h] [--debug] [--verbose] [--threads THREADS] [--test]
+               [--slimerjs] [--screenshot] [--user-agent USERAGENT]
+               [--max-time MAXTIME] [--init]
                scenario
 
 Start workload.
@@ -55,12 +50,17 @@ positional arguments:
   scenario
 
 optional arguments:
-  -h, --help         show this help message and exit
-  --debug            enable debug information
-  --verbose          makes generator more verbose
-  --threads THREADS  number of threads to run simultaneously
-  --test             run a scenario only once
-  --screenshot       save screenshot per step
+  -h, --help            show this help message and exit
+  --debug               enable debug information
+  --verbose             makes generator more verbose
+  --threads THREADS     number of threads to run simultaneously
+  --test                run a scenario only once
+  --slimerjs            use slimerjs instead of phantomjs
+  --screenshot          provide screenshots after each step
+  --user-agent USERAGENT
+                        provide a custom User-Agent
+  --max-time MAXTIME    provide a maximum runtime
+  --init                only download browsers
 ```
 
 ## Actions list
@@ -107,7 +107,7 @@ optional arguments:
   * `selector` - Value for `querySelector`
 
 ## Development
-Included in this repository is a [Vagrant](https://www.vagrantup.com/) file which you can use to develop Felt locally. Please don't hesitate to submit bugs, feature requests or pull requests. 
+Please don't hesitate to submit bugs, feature requests or pull requests. We welcome feedback and would love to hear how you're using Felt in your own environment.
 
 ## Sponsored by CoScale
 <img src="http://docs.coscale.com/gfx/logo.png" alt="CoScale logo" />
