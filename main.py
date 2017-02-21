@@ -104,7 +104,7 @@ def main(args):
     felt = Felt(options, scenarios)
 
     # Start worker
-    print felt.run()
+    print(felt.run())
 
 
 def loadScenario(file):
