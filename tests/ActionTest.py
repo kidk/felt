@@ -24,34 +24,37 @@ class ScenarioParserTest(unittest.TestCase):
 
         result = self.runTest(scenario)
 
-        self.assertEqual(2, len(result))
+        self.assertEqual("results", result['type'])
+        self.assertEqual(2, len(result['data']))
+
+        data = result['data']
 
         # Check action 1
-        self.assertLess(result[0]['start'], result[0]['end'])
-        self.assertTrue(result[0]['success'])
+        self.assertLess(data[0]['start'], data[0]['end'])
+        self.assertTrue(data[0]['success'])
         self.assertEquals(
-            result[0]['time'],
-            result[0]['end'] - result[0]['start']
+            data[0]['time'],
+            data[0]['end'] - data[0]['start']
         )
-        self.assertEquals('https://felt.sava.be/', result[0]['url'])
-        self.assertEquals('open_url', result[0]['step']['action'])
-        self.assertEquals('https://felt.sava.be/', result[0]['step']['value'])
+        self.assertEquals('https://felt.sava.be/', data[0]['url'])
+        self.assertEquals('open_url', data[0]['step']['action'])
+        self.assertEquals('https://felt.sava.be/', data[0]['step']['value'])
 
         # Check action 2
-        self.assertLess(result[1]['start'], result[1]['end'])
-        self.assertTrue(result[1]['success'])
+        self.assertLess(data[1]['start'], data[1]['end'])
+        self.assertTrue(data[1]['success'])
         self.assertEquals(
-            result[1]['time'],
-            result[1]['end'] - result[1]['start']
+            data[1]['time'],
+            data[1]['end'] - data[1]['start']
         )
         self.assertEquals(
             'https://felt.sava.be/settings.php',
-            result[1]['url']
+            data[1]['url']
         )
-        self.assertEquals('click', result[1]['step']['action'])
+        self.assertEquals('click', data[1]['step']['action'])
         self.assertEquals(
             '#navbar > ul > li:nth-child(2) > a',
-            result[1]['step']['selector']
+            data[1]['step']['selector']
         )
 
     def runTest(self, scenario):
