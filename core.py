@@ -102,16 +102,17 @@ class WebworkerService:
                 rawData = dataQueue.get(False)
 
                 parsedRows = json.loads(rawData)
-                for row in parsedRows:
-                    # We need to decode the step string
-                    row['step'] = json.loads(row['step'])
-                data.append(parsedRows)
+                if parsedRows['type'] == 'results':
+                    for row in parsedRows['data']:
+                        # We need to decode the step string
+                        row['step'] = json.loads(row['step'])
+                    data.append(parsedRows)
         except Empty:
             pass
         except ValueError:
             if options.isDebug():
                 raise ValueError(
-                    "Unable to parse data coming from worker: " + rawData
+                    "Unable to parse data coming from worker: '%s'" % rawData
                 )
             else:
                 raise ValueError("Unable to parse data coming from worker")
