@@ -60,7 +60,7 @@ target/
 .idea/
 
 # PhantomJS
-phantomjs
+bin/
 
 # Vagrant
 .vagrant
