@@ -1,0 +1,11 @@
+---
+
+tasks:
+  - action: open_url
+    url: http://felt.sava.be/
+    
+  - action: click
+    element: selector 
+
+  - action: open_url
+    url: http://felt.sava.be/login.php

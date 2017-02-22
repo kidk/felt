@@ -1,0 +1,28 @@
+---
+
+tasks:
+  - action: open_url
+    value: http://felt.sava.be/
+
+  - action: open_url
+    value: http://felt.sava.be/login.php
+
+  - action: set_value
+    selector: input[name=username]
+    value: felt
+
+  - action: set_value
+    selector: input[name=password]
+    value: isAWESOME
+
+  - action: sleep
+    value:
+      min: 1000
+      max: 5000
+
+  - action: submit
+    selector: "#loginForm"
+
+  - action: event
+    type: submit
+    select: "#loginForm"
