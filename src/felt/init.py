@@ -7,7 +7,7 @@ import zipfile
 import tarfile
 import stat
 import os
-
+from appdirs import *
 
 def init(options):
     """Init function.
@@ -17,21 +17,22 @@ def init(options):
 
     # Configuration for installation
     operatingsystem = platform.system()
+    datadir = user_data_dir("felt", "Felt team")
 
     phantomjs = False
     slimerjs = False
 
-    path_slimerjs = "bin/slimerjs/slimerjs-0.10.2/slimerjs.py"
+    path_slimerjs = "%s/slimerjs/slimerjs-0.10.2/slimerjs.py" % datadir
 
     download_phantomjs = ""
     if operatingsystem == "Darwin":
         download_phantomjs = "https://bitbucket.org/ariya/" + \
             "phantomjs/downloads/phantomjs-2.1.1-macosx.zip"
-        path_phantomjs = "bin/phantomjs/phantomjs-2.1.1-macosx/bin/phantomjs"
+        path_phantomjs = "%s/phantomjs/phantomjs-2.1.1-macosx/bin/phantomjs" % datadir
     elif operatingsystem == "Linux":
         download_phantomjs = "https://bitbucket.org/ariya/" + \
             "phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2"
-        path_phantomjs = "bin/phantomjs/phantomjs-2.1.1-linux-x86_64/" + \
+        path_phantomjs = "%s/phantomjs/phantomjs-2.1.1-linux-x86_64/" % datadir + \
             "bin/phantomjs"
     else:
         raise Exception("Unknown operating system: " + operatingsystem)
@@ -51,26 +52,28 @@ def init(options):
     if os.path.isfile(path_slimerjs):
         slimerjs = False
 
+    # Felt dir check
+    if not os.path.exists(datadir):
+        os.makedirs(datadir)
+
     # PhantomJS
     if phantomjs:
         print("Creating directories")
-        if not os.path.exists("bin/"):
-            os.makedirs("bin/")
-        if phantomjs and not os.path.exists("bin/phantomjs"):
-            os.makedirs("bin/phantomjs")
+        if phantomjs and not os.path.exists("%s/phantomjs" % datadir):
+            os.makedirs("%s/phantomjs" % datadir)
 
         print("Downloading phantomjs")
         if operatingsystem == "Linux":
-            urlretrieve(download_phantomjs, "bin/phantomjs.tar.bz2")
+            urlretrieve(download_phantomjs, "%s/phantomjs.tar.bz2" % datadir)
         else:
-            urlretrieve(download_phantomjs, "bin/phantomjs.zip")
+            urlretrieve(download_phantomjs, "%s/phantomjs.zip" % datadir)
 
         print("Unzipping phantomjs")
         if operatingsystem == "Linux":
-            zip_ref = tarfile.open("bin/phantomjs.tar.bz2", "r:bz2")
+            zip_ref = tarfile.open("%s/phantomjs.tar.bz2" % datadir, "r:bz2")
         else:
-            zip_ref = zipfile.ZipFile("bin/phantomjs.zip", 'r')
-        zip_ref.extractall("bin/phantomjs")
+            zip_ref = zipfile.ZipFile("%s/phantomjs.zip" % datadir, 'r')
+        zip_ref.extractall("%s/phantomjs" % datadir)
         zip_ref.close()
 
         print("Setting permissions lost from unzip")
@@ -79,24 +82,22 @@ def init(options):
 
         print("Cleaning up")
         if operatingsystem == "Linux":
-            os.remove("bin/phantomjs.tar.bz2")
+            os.remove("%s/phantomjs.tar.bz2" % datadir)
         else:
-            os.remove("bin/phantomjs.zip")
+            os.remove("%s/phantomjs.zip" % datadir)
 
     # SlimerJS
     if slimerjs:
         print("Creating directories")
-        if not os.path.exists("bin/"):
-            os.makedirs("bin/")
-        if slimerjs and not os.path.exists("bin/slimerjs"):
-            os.makedirs("bin/slimerjs")
+        if slimerjs and not os.path.exists("%s/slimerjs" % datadir):
+            os.makedirs("%s/slimerjs" % datadir)
 
         print("Downloading slimerjs")
-        urlretrieve(download_slimerjs, "bin/slimerjs.zip")
+        urlretrieve(download_slimerjs, "%s/slimerjs.zip" % datadir)
 
         print("Unzipping slimerjs")
-        zip_ref = zipfile.ZipFile("bin/slimerjs.zip", 'r')
-        zip_ref.extractall("bin/slimerjs")
+        zip_ref = zipfile.ZipFile("%s/slimerjs.zip" % datadir, 'r')
+        zip_ref.extractall("%s/slimerjs" % datadir)
         zip_ref.close()
 
         print("Setting permissions lost from unzip")
@@ -104,7 +105,7 @@ def init(options):
         os.chmod(path_slimerjs, stats.st_mode | stat.S_IEXEC)
 
         print("Cleaning up")
-        os.remove("bin/slimerjs.zip")
+        os.remove("%s/slimerjs.zip" % datadir)
 
     # Set location in options
     options.setBrowserPath('phantomjs', path_phantomjs)
