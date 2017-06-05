@@ -20,7 +20,7 @@ __credits__ = ["Stijn Polfliet", "Samuel Vandamme", "Hatem Mostafa"]
 __version__ = "alpha"
 
 
-def main(args):
+def main():
     """Main function.
 
     The main function parses the command line arguments, reads the input file
@@ -114,6 +114,3 @@ def loadScenario(file):
     json = commentjson.loads(content)
     return Scenario(json)
 
-
-if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
