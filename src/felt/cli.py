@@ -58,7 +58,7 @@ def main():
         files.append(args.scenario)
     elif os.path.isdir(args.scenario):
         for file in os.listdir(args.scenario):
-            files.append(file)
+            files.append(os.path.join(args.scenario, file))
     else:
         print("scenario '%s' not found" % args.scenario)
         return
@@ -68,13 +68,13 @@ def main():
         if file.endswith(".json"):
             scenarios.append(
                 loadJSONScenario(
-                    os.path.join(args.scenario, file)
+                    file
                 )
             )
         elif file.endswith(".yaml") or file.endswith(".yml"):
             scenarios.append(
                 loadYAMLscenario(
-                    os.path.join(args.scenario, file)
+                    file
                 )
             )
 
