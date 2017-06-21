@@ -96,10 +96,12 @@ class WebworkerService:
 
         # Parse data coming from threads
         data = []
-        parsedRows = ""
         try:
             while True:
                 rawData = dataQueue.get(False)
+
+                if rawData.strip() == '':
+                    continue
 
                 parsedRows = json.loads(rawData)
                 if parsedRows['type'] == 'results':
@@ -162,12 +164,10 @@ class WebworkerService:
         data = ""
 
         while True:
-            nextline = process.stdout.readline()
-            data += nextline.decode(sys.stdout.encoding)
+            nextline = process.stdout.readline().decode(sys.stdout.encoding)
+            dataQueue.put(nextline)
 
             if process.poll() is not None:
-                print data
-                dataQueue.put(data)
                 threadQueue.put("Something")
                 break
 
