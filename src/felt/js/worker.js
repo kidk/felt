@@ -172,8 +172,8 @@ function nextAction() {
             case 'event':
                 event(current);
 
-            case 'time':
-                sleep(current.value);
+            case 'sleep':
+                sleep(current);
                 break;
 
             case 'wait_for_element':
@@ -352,15 +352,21 @@ function wait_for_element(selector) {
  *
  * @param  {number} value value of sleep in ms.
  */
-function sleep(value) {
+function sleep(current) {
     // Randomly select a sleep time between two values
-    if (value instanceof Object) {
-        var min = value.min;
-        var max = value.max;
+    if (current.time instanceof Object) {
+        var min = current.time.min;
+        var max = current.time.max;
         value = Math.floor(Math.random() * (max - min) ) + min;
+    } else {
+        value = current.time;
     }
 
     pageReady = false;
+    output({
+        'source': 'sleep',
+        'message': 'Waiting for ' + value + ' seconds.'
+    });
     setTimeout(function() {
         pageReady = true;
     }, value);
