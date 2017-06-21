@@ -145,7 +145,7 @@ class WebworkerService:
         """Execute browser thread with options."""
         command = [
             options.getBrowserPath(),
-            'worker.js',
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'js/worker.js'),
             str(threadId),
             json.dumps(scenario.preprocessScenario()),
             json.dumps(options.getRunnerOptions())
@@ -166,6 +166,7 @@ class WebworkerService:
             data += nextline.decode(sys.stdout.encoding)
 
             if process.poll() is not None:
+                print data
                 dataQueue.put(data)
                 threadQueue.put("Something")
                 break

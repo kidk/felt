@@ -34,6 +34,7 @@ setup(
     license='MIT',
 
     package_dir={"": "src"},
+    package_data={'': ['js/worker.js']},
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[

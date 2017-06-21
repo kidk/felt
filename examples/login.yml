@@ -1,28 +1,28 @@
 ---
 
 steps:
-  - action: open_url
+  - action: load
     value: http://felt.sava.be/
 
-  - action: open_url
+  - action: load
     value: http://felt.sava.be/login.php
 
-  - action: set_value
+  - action: set
+    attribute: value
     selector: input[name=username]
     value: felt
 
-  - action: set_value
+  - action: set
+    attribute: value
     selector: input[name=password]
     value: isAWESOME
 
   - action: sleep
-    value:
+    time:
       min: 1000
       max: 5000
 
-  - action: submit
-    selector: "#loginForm"
-
   - action: event
     type: submit
-    select: "#loginForm"
+    selector: "#loginForm"
+

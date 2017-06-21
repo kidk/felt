@@ -158,28 +158,21 @@ function nextAction() {
         }
         output(JSON.stringify(current));
         var actionSuccess = true;
+
+        // TODO: Instead of sending each individual var, send current
         switch (current.action) {
-            case 'open_url':
+            case 'load':
                 loadpage(current.value);
                 break;
 
-            case 'set_value':
-                set_value(current.selector, current.value);
+            case 'set':
+                set_value(current.selector, current.attribute, current.value);
                 break;
 
-            case 'submit':
-                submit(current.selector);
-                break;
+            case 'event':
+                event(current.selector, current.type);
 
-            case 'click':
-                click(current.selector);
-                break;
-
-            case 'click_one':
-                click_one(current.selector);
-                break;
-
-            case 'sleep':
+            case 'time':
                 sleep(current.value);
                 break;
 
@@ -226,16 +219,16 @@ function nextAction() {
  * @param {string} value    The value, when multiple values are available, one
  * is chosen at random.
  */
-function set_value(selector, value) {
+function set(selector, attribute, value) {
     // Randomly set a value between two values
     if (value instanceof Array) {
         value = value[Math.floor(Math.random() * value.length)];
         output("Using value for set_value: " + value);
     }
 
-    page.evaluate(function(selector, value) {
+    page.evaluate(function(selector, attribute, value) {
         qselector = document.querySelector(selector);
-        qselector.value = value;
+        qselector[attribute] = value;
 
         // Manually dispatch events for front-end frameworks like Angular2
         var eventType;
@@ -251,91 +244,68 @@ function set_value(selector, value) {
         var event = document.createEvent("UIEvent");
         event.initUIEvent(eventType, true, true, window, 0);
         qselector.dispatchEvent(event);
-    }, selector, value);
+    }, selector, attribute, value);
 }
 
 /**
- * Submit form.
+ * Event
  *
  * @param  {string} selector The selector.
+ * @param  {string} type The type of event that should be triggerd on the selector.
  */
-function submit(selector) {
-    page.evaluate(function(selector) {
-        document.querySelector(selector).submit();
-    }, selector);
-}
-
-/**
- * Click element.
- *
- * @param  {string} selector The selector.
- */
-function click(selector) {
-    var returnedValue = page.evaluate(function(selector) {
+function event(step) {
+    var returnedValue = page.evaluate(function(step) {
         var message = '';
-        var elements = document.querySelectorAll(selector);
 
-        /**
-         * Click element helper.
-         *
-         * @param  {string} element The element that will be clicked.
-         */
-        function click_element(element) {
-            // TODO: click on an <a> element is not supported in all browsers by default.
-            // find a more clean solution.
-            if (typeof element.click === 'function') {
-                element.click();
-            } else if (element.fireEvent) {
-                return element.fireEvent('onclick');
-            } else {
-                var evObj = document.createEvent('Events');
-                evObj.initEvent('click', true, false);
-                element.dispatchEvent(evObj);
-            }
+        switch(step.type) {
+            case 'submit':
+                document.querySelector(step.selector).submit();
+            break;
+            case 'click':
+                /**
+                 * Click element helper.
+                 *
+                 * @param  {string} element The element that will be clicked.
+                 */
+                function click_element(element) {
+                    // TODO: click on an <a> element is not supported in all browsers by default.
+                    // find a more clean solution.
+                    if (typeof element.click === 'function') {
+                        element.click();
+                    } else if (element.fireEvent) {
+                        return element.fireEvent('onclick');
+                    } else {
+                        var evObj = document.createEvent('Events');
+                        evObj.initEvent('click', true, false);
+                        element.dispatchEvent(evObj);
+                    }
+                }
+
+                var elements = document.querySelectorAll(step.selector);
+                if (elements !== null && elements.length === 1) {
+                    click_element(elements[0]);
+                } else if (elements !== null && elements.length > 1) {
+                    if (step.on_multiple && step.on_multiple == 'random') {
+                        message = 'Selector ' + step.selector + ' matches more than 1 element, clicking a random element.';
+                        click_element(elements[Math.floor(Math.random() * elements.length)]);
+                    } else {
+                        message = 'Selector ' + step.selector + ' matches more than 1 element, clicking first element.';
+                        click_element(elements[0]);
+                    }
+                } else {
+                    message = 'Selector ' + step.selector + ' does not match any element in the dom';
+                }
+            break;
+            default:
+
+            break;
         }
 
-        if (elements !== null && elements.length === 1) {
-            click_element(elements[0]);
-        } else if (elements !== null && elements.length > 1) {
-            message = 'Selector ' + selector + ' matches more than 1 element, clicking the first element.';
-            click_element(elements[0]);
-        } else {
-            message = 'Selector ' + selector + ' does not match any element in the dom';
-        }
-
-        return message;
-    }, selector);
+    }, step);
 
     if (returnedValue !== '') {
         warn({
             'source': 'click',
-            'message': returnedValue
-        });
-    }
-}
-
-/**
- * Clicks a random element in the list.
- *
- * @param  {string} selector The selector.
- */
-function click_one(selector) {
-    var returnedValue = page.evaluate(function(selector) {
-        elements = document.querySelectorAll(selector);
-        var message = '';
-        if (elements === null || elements.length === 0) {
-            message = 'Selector ' + selector + ' does not match any element in the dom';
-        } else {
-            element = elements[Math.floor(Math.random() * elements.length)];
-            element.click();
-        }
-
-        return message;
-    }, selector);
-
-    if (returnedValue !== '') {
-        warn({
-            'source': 'click_one',
             'message': returnedValue
         });
     }

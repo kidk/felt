@@ -2,32 +2,35 @@
     "variables":[],
     "steps": [
         {
-            "action": "open_url",
+            "action": "load",
             "value": "http://felt.sava.be/"
         },
         {
-            "action": "open_url",
+            "action": "load",
             "value": "http://felt.sava.be/login.php"
         },
         {
-            "action": "set_value",
+            "action": "set",
+            "attribute": "value",
             "selector": "input[name=username]",
             "value": "felt"
         },
         {
-            "action": "set_value",
+            "action": "set",
+            "attribute": "value",
             "selector": "input[name=password]",
             "value": "isAWESOME"
         },
         {
-            "action" : "sleep",
-            "value" : {
+            "action" : "wait",
+            "time" : {
                 "min": 1000,
                 "max": 5000
             }
         },
         {
-            "action": "submit",
+            "action": "event",
+            "type": "submit",
             "selector": "#loginForm"
         }
     ]

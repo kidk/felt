@@ -1,11 +1,12 @@
 ---
 
 steps:
-  - action: open_url
+  - action: load
     url: http://felt.sava.be/
     
-  - action: click
-    element: selector 
+  - action: event
+    type: click
+    element: "#navbar > ul > li:nth-child(2) > a"
 
-  - action: open_url
+  - action: load
     url: http://felt.sava.be/login.php
