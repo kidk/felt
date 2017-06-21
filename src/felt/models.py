@@ -113,7 +113,9 @@ class Scenario():
     def preprocessScenario(self):
         """Preprocess the scenario so that the variables are filled in."""
         obj = copy.deepcopy(self._scenario)
-        variables = copy.deepcopy(obj['variables'])
+        variables = []
+        if 'variables' in obj:
+            variables = copy.deepcopy(obj['variables'])
         steps = copy.deepcopy(obj['steps'])
 
         # Loop all variables

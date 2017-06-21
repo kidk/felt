@@ -1,6 +1,6 @@
 ---
 
-tasks:
+steps:
   - action: open_url
     url: http://felt.sava.be/
     

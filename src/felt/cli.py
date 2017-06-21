@@ -8,6 +8,7 @@ import argparse
 import sys
 import os
 import commentjson
+import yaml
 from models import Scenario, Options
 from core import Felt
 from init import init
@@ -52,20 +53,30 @@ def main():
     args = parser.parse_args()
 
     # Load scenarios from disk
-    scenarios = []
+    files = []
     if os.path.isfile(args.scenario):
-        scenarios.append(loadScenario(args.scenario))
+        files.append(args.scenario)
     elif os.path.isdir(args.scenario):
         for file in os.listdir(args.scenario):
-            if file.endswith(".json"):
-                scenarios.append(
-                    loadScenario(
-                        os.path.join(args.scenario, file)
-                    )
-                )
+            files.append(file)
     else:
         print("scenario '%s' not found" % args.scenario)
         return
+
+    scenarios = []
+    for file in files:
+        if file.endswith(".json"):
+            scenarios.append(
+                loadJSONScenario(
+                    os.path.join(args.scenario, file)
+                )
+            )
+        elif file.endswith(".yaml") or file.endswith(".yml"):
+            scenarios.append(
+                loadYAMLscenario(
+                    os.path.join(args.scenario, file)
+                )
+            )
 
     # Parse options
     options = Options()
@@ -107,10 +118,20 @@ def main():
     print(felt.run())
 
 
-def loadScenario(file):
+def readFile(file):
     with open(file, 'r') as content_file:
         content = content_file.read()
 
-    json = commentjson.loads(content)
-    return Scenario(json)
+    return content
 
+def loadJSONScenario(file):
+    content = readFile(file)
+
+    scenarioData = commentjson.loads(content)
+    return Scenario(scenarioData)
+
+def loadYAMLscenario(file):
+    content = readFile(file)
+
+    scenarioData = yaml.load(content)
+    return Scenario(scenarioData)
