@@ -166,11 +166,11 @@ function nextAction() {
                 break;
 
             case 'set':
-                set_value(current.selector, current.attribute, current.value);
+                set(current);
                 break;
 
             case 'event':
-                event(current.selector, current.type);
+                event(current);
 
             case 'time':
                 sleep(current.value);
@@ -219,20 +219,22 @@ function nextAction() {
  * @param {string} value    The value, when multiple values are available, one
  * is chosen at random.
  */
-function set(selector, attribute, value) {
+function set(current) {
     // Randomly set a value between two values
-    if (value instanceof Array) {
-        value = value[Math.floor(Math.random() * value.length)];
+    if (current.value instanceof Array) {
+        value = current.value[Math.floor(Math.random() * current.value.length)];
         output("Using value for set_value: " + value);
+    } else {
+        value = current.value;
     }
 
-    page.evaluate(function(selector, attribute, value) {
-        qselector = document.querySelector(selector);
-        qselector[attribute] = value;
+    page.evaluate(function(current, value) {
+        selector = document.querySelector(current.selector);
+        selector[current.attribute] = value;
 
         // Manually dispatch events for front-end frameworks like Angular2
         var eventType;
-        switch(qselector.tagName) {
+        switch(selector.tagName) {
             case "INPUT":
                 eventType = "input";
                 break;
@@ -243,8 +245,8 @@ function set(selector, attribute, value) {
 
         var event = document.createEvent("UIEvent");
         event.initUIEvent(eventType, true, true, window, 0);
-        qselector.dispatchEvent(event);
-    }, selector, attribute, value);
+        selector.dispatchEvent(event);
+    }, current, value);
 }
 
 /**
