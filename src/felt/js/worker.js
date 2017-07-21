@@ -156,13 +156,14 @@ function nextAction() {
         if (!current) {
             exit();
         }
+
         output(JSON.stringify(current));
         var actionSuccess = true;
 
         // TODO: Instead of sending each individual var, send current
         switch (current.action) {
             case 'load':
-                loadpage(current.value);
+                loadpage(current.url);
                 break;
 
             case 'set':
@@ -208,6 +209,8 @@ function nextAction() {
             action++;
         }
     }
+
+    // Wait for previous command to finish
     setTimeout(function() {
         nextAction();
     }, 200);
