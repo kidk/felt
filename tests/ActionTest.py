@@ -1,8 +1,8 @@
 import unittest
 
-from core import Felt
-from models import Scenario, Options
-from init import init
+from felt.core import Felt
+from felt.models import Scenario, Options
+from felt.init import init
 
 
 class ScenarioParserTest(unittest.TestCase):

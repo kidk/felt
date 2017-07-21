@@ -23,6 +23,9 @@ setup(
     description='Front end load testing',
     long_description=long_description,
 
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
+
     # The project's main homepage.
     url='https://github.com/kidk/felt',
 
