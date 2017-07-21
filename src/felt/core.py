@@ -145,6 +145,8 @@ class WebworkerService:
     @staticmethod
     def execute(threadId, scenario, options):
         """Execute browser thread with options."""
+        
+        # Prepare command statement
         command = [
             options.getBrowserPath(),
             os.path.join(os.path.dirname(os.path.realpath(__file__)), 'js/worker.js'),
@@ -152,7 +154,8 @@ class WebworkerService:
             json.dumps(scenario.preprocessScenario()),
             json.dumps(options.getRunnerOptions())
         ]
-        print(command)
+
+        # Execute and send output to PIPE
         process = subprocess.Popen(
             command,
             shell=False,
@@ -160,15 +163,20 @@ class WebworkerService:
             stderr=subprocess.STDOUT
         )
 
-        # Main loop
-        data = ""
+        # Set correct encoding or default to UTF-8
+        encoding = sys.stdout.encoding
+        if encoding is None:
+            encoding = 'UTF-8'
 
+        # Main output loop
         while True:
-            nextline = process.stdout.readline().decode(sys.stdout.encoding)
+            nextline = process.stdout.readline().decode(encoding)
             dataQueue.put(nextline)
 
             if process.poll() is not None:
                 threadQueue.put("Something")
                 break
+
+        print("Returncode: %s" % process.returncode)
 
         return None
