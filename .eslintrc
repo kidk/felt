@@ -1,0 +1,14 @@
+{
+    "env": {
+        "phantomjs": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 6
+    },
+    "rules": {
+        "semi": 2,
+        "eqeqeq": "off",
+        "curly": "error",
+        "quotes": ["error", "single"]
+    }
+}

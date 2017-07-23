@@ -152,7 +152,7 @@ function exit(code) {
 
     if (!exited) {
         exited = true;
-        log("results", results);
+        log('results', results);
 
         phantom.exit(code);
     }
@@ -247,7 +247,7 @@ function set(current) {
     // Randomly set a value between two values
     if (current.value instanceof Array) {
         value = current.value[Math.floor(Math.random() * current.value.length)];
-        output("Using value for set_value: " + value);
+        output('Using value for set_value: ' + value);
     } else {
         value = current.value;
     }
@@ -259,15 +259,15 @@ function set(current) {
         // Manually dispatch events for front-end frameworks like Angular2
         var eventType;
         switch(selector.tagName) {
-            case "INPUT":
-                eventType = "input";
+            case 'INPUT':
+                eventType = 'input';
                 break;
             default:
-                eventType = "change";
+                eventType = 'change';
                 break;
         }
 
-        var event = document.createEvent("UIEvent");
+        var event = document.createEvent('UIEvent');
         event.initUIEvent(eventType, true, true, window, 0);
         selector.dispatchEvent(event);
     }, current, value);
@@ -411,13 +411,13 @@ function check_element_exists(current, checker) {
             return false;
         }
 
-        if (typeof checker !== "function") {
+        if (typeof checker !== 'function') {
             return true;
         }
 
         // Do other checks if are set.
         for (i = 0; i < elements.length; ++i) {
-            var found = checker(elements[i], current)
+            var found = checker(elements[i], current);
             if (found === true) {
                 return true;
             }
@@ -428,7 +428,7 @@ function check_element_exists(current, checker) {
     }, current, checker);
 
     addResult({
-        'type': "check_element_exists",
+        'type': 'check_element_exists',
         'success': found,
         'url': requestUrl,
         'step': JSON.stringify(current).replace(new RegExp('"', 'g'), '"')
@@ -446,7 +446,7 @@ function check_element_exists(current, checker) {
  */
 function contains_text(element, current) {
     var textProperty = 'textContent' in document ? 'textContent' : 'innerText';
-    return element[textProperty].indexOf(current.value) > -1
+    return element[textProperty].indexOf(current.value) > -1;
 }
 
 /**
@@ -468,10 +468,10 @@ nextAction();
  */
 function log(type, message) {
     console.log(JSON.stringify({
-        "type": type,
-        "uid": pad(uid),
-        "timestamp": Date.now(),
-        "data": message
+        'type': type,
+        'uid': pad(uid),
+        'timestamp': Date.now(),
+        'data': message
     }));
 }
 
@@ -515,7 +515,7 @@ function warn(message) {
  */
 function error(message) {
     if (options['verbose']) {
-        log('error', message)
+        log('error', message);
     }
 }
 
@@ -545,7 +545,7 @@ function pad(num, size) {
  */
 page.onError = function(msg, trace) {
     error({
-        'source': "onError",
+        'source': 'onError',
         'message': msg,
         'trace': trace
     });
@@ -558,7 +558,7 @@ page.onError = function(msg, trace) {
  */
 page.onResourceRequested = function(requestData, networkRequest) {
     debug({
-        'source': "onResourceRequested",
+        'source': 'onResourceRequested',
         'requestData': requestData,
         'networkRequest': networkRequest
     });
@@ -656,7 +656,7 @@ page.onInitialized = function() {
     debug({
         'source': 'onInitialized',
         'requestUrl': requestUrl
-    })
+    });
 
     // Increase requests
     requests += 1;
@@ -684,7 +684,7 @@ page.onLoadFinished = function(status) {
     pageReady = true;
     if (status !== 'success') {
         addResult({
-            'type': "onLoadFinished",
+            'type': 'onLoadFinished',
             'url': requestUrl,
             'success': false,
             'step': JSON.stringify(scenario[action - 1]).replace(new RegExp('"', 'g'), '"')
@@ -696,7 +696,7 @@ page.onLoadFinished = function(status) {
         if (pageInitializetime > 0) {
             var pageLoadFinishTime = Date.now();
             addResult({
-                'type': "onLoadFinished",
+                'type': 'onLoadFinished',
                 'url': requestUrl,
                 'success': true,
                 'start': pageInitializetime,
@@ -718,7 +718,7 @@ page.onPageCreated = function(newPage) {
     newPage.onLoadFinished = function(){
         page = newPage;
     };
-}
+};
 
 /**
  * This is for printing any logs or errors that may have happened in the page.evaluate function.
@@ -729,5 +729,5 @@ page.onConsoleMessage = function(msg) {
     debug({
         'source': 'onConsoleMessage',
         'message': msg
-    })
+    });
 };
