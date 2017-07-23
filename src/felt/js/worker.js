@@ -32,6 +32,23 @@ var requests = 0;
 var results = [];
 
 /**
+ * Add result function
+ * This function is used to add a result to the results array, it will also
+ * check the success and exit on failure.
+ *
+ * @return {boolean}
+ */
+function addResult(result) {
+    // Push to array
+    results.push(result);
+
+    // Check result
+    if (!result.success) {
+        exit(1);
+    }
+}
+
+/**
  * The requested page url.
  *
  * @type {string}
@@ -128,12 +145,16 @@ var exited = false;
 /**
  * Exit functionality.
  */
-function exit() {
+function exit(code) {
+    if (code === undefined) {
+        code = 0;
+    }
+
     if (!exited) {
         exited = true;
         log("results", results);
 
-        phantom.exit(0);
+        phantom.exit(code);
     }
 }
 
@@ -406,7 +427,7 @@ function check_element_exists(current, checker) {
 
     }, current, checker);
 
-    results.push({
+    addResult({
         'type': "check_element_exists",
         'success': found,
         'url': requestUrl,
@@ -662,7 +683,7 @@ page.onLoadFinished = function(status) {
 
     pageReady = true;
     if (status !== 'success') {
-        results.push({
+        addResult({
             'type': "onLoadFinished",
             'url': requestUrl,
             'success': false,
@@ -674,7 +695,7 @@ page.onLoadFinished = function(status) {
         // Only save results when we know a page was requested, onLoadFinished gets called a lot more then needed
         if (pageInitializetime > 0) {
             var pageLoadFinishTime = Date.now();
-            results.push({
+            addResult({
                 'type': "onLoadFinished",
                 'url': requestUrl,
                 'success': true,
