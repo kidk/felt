@@ -11,6 +11,8 @@ cache:
 
 install:
   - "pip install flake8"
+  - "nvm install 0.8"
+  - "nvm use 0.8"
   - "npm i -g eslint"
 
 before_script: 
