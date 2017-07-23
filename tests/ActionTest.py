@@ -1,4 +1,5 @@
 import unittest
+import json
 
 from felt.core import Felt
 from felt.models import Scenario, Options
@@ -12,17 +13,20 @@ class ScenarioParserTest(unittest.TestCase):
             "variables": [],
             "steps": [
                 {
-                    "action": "open_url",
-                    "value": "https://felt.sava.be/"
+                    "action": "load",
+                    "url": "https://felt.sava.be/"
                 },
                 {
-                    "action": "click",
-                    "selector": "#navbar > ul > li:nth-child(2) > a",
+                    "action": "event",
+                    "type": "click",
+                    "element": "#navbar > ul > li:nth-child(2) > a",
                 }
             ]
         })
 
         result = self.runTest(scenario)
+
+        print json.dumps(result, indent=4, sort_keys=True)
 
         self.assertEqual("results", result['type'])
         self.assertEqual(2, len(result['data']))
@@ -37,8 +41,8 @@ class ScenarioParserTest(unittest.TestCase):
             data[0]['end'] - data[0]['start']
         )
         self.assertEquals('https://felt.sava.be/', data[0]['url'])
-        self.assertEquals('open_url', data[0]['step']['action'])
-        self.assertEquals('https://felt.sava.be/', data[0]['step']['value'])
+        self.assertEquals('load', data[0]['step']['action'])
+        self.assertEquals('https://felt.sava.be/', data[0]['step']['url'])
 
         # Check action 2
         self.assertLess(data[1]['start'], data[1]['end'])
@@ -51,10 +55,11 @@ class ScenarioParserTest(unittest.TestCase):
             'https://felt.sava.be/settings.php',
             data[1]['url']
         )
-        self.assertEquals('click', data[1]['step']['action'])
+        self.assertEquals('event', data[1]['step']['action'])
+        self.assertEquals('click', data[1]['step']['type'])
         self.assertEquals(
             '#navbar > ul > li:nth-child(2) > a',
-            data[1]['step']['selector']
+            data[1]['step']['element']
         )
 
     def runTest(self, scenario):

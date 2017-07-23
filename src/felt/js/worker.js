@@ -286,19 +286,19 @@ function event(step) {
                     }
                 }
 
-                var elements = document.querySelectorAll(step.selector);
+                var elements = document.querySelectorAll(step.element);
                 if (elements !== null && elements.length === 1) {
                     click_element(elements[0]);
                 } else if (elements !== null && elements.length > 1) {
                     if (step.on_multiple && step.on_multiple == 'random') {
-                        message = 'Selector ' + step.selector + ' matches more than 1 element, clicking a random element.';
+                        message = 'Selector ' + step.element + ' matches more than 1 element, clicking a random element.';
                         click_element(elements[Math.floor(Math.random() * elements.length)]);
                     } else {
-                        message = 'Selector ' + step.selector + ' matches more than 1 element, clicking first element.';
+                        message = 'Selector ' + step.element + ' matches more than 1 element, clicking first element.';
                         click_element(elements[0]);
                     }
                 } else {
-                    message = 'Selector ' + step.selector + ' does not match any element in the dom';
+                    message = 'Selector ' + step.element + ' does not match any element in the dom';
                 }
             break;
             default:

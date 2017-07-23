@@ -12,6 +12,6 @@ cache:
 install:
   - "pip install flake8"
 
-before_script: "flake8 --ignore=D203 --exclude bin/ ."
+before_script: "flake8 --ignore=D203 --exclude bin/ srv/"
 
-script: "python test.py"
+script: "python setup.py test"

@@ -5,7 +5,6 @@ Handles input parsing, checking parameters and starting the workload run.
 """
 
 import argparse
-import sys
 import os
 import commentjson
 import yaml
