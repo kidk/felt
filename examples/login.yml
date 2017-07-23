@@ -2,10 +2,10 @@
 
 steps:
   - action: load
-    value: http://felt.sava.be/
+    url: http://felt.sava.be/
 
   - action: load
-    value: http://felt.sava.be/login.php
+    url: http://felt.sava.be/login.php
 
   - action: set
     attribute: value

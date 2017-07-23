@@ -2,7 +2,7 @@
 
 steps:
   - action: load
-    value: http://felt.sava.be/
+    url: http://felt.sava.be/
 
   - action: event
     type: click

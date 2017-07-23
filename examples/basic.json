@@ -3,7 +3,7 @@
     "steps": [
         {
             "action": "load",
-            "value": "http://felt.sava.be/"
+            "url": "http://felt.sava.be/"
         },
         {
             "action": "event",
@@ -12,7 +12,7 @@
         },
         {
             "action": "load",
-            "value": "http://felt.sava.be/login.php"
+            "url": "http://felt.sava.be/login.php"
         }
     ]
 }
