@@ -19,4 +19,6 @@ before_script:
   - "flake8 --ignore=D203 --exclude bin/ srv/"
   - "eslint src/felt/js/**"
 
-script: "python setup.py test"
+script: 
+  - "python setup.py build"
+  - "python setup.py test"
