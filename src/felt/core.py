@@ -119,6 +119,9 @@ class WebworkerService:
             else:
                 raise ValueError("Unable to parse data coming from worker")
 
+        if options.isDebug():
+            print json.dumps(data, indent=4, sort_keys=True)
+
         return data
 
     def startRun(self, scenarios, options):
