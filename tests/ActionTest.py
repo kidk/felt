@@ -23,48 +23,101 @@ class ScenarioParserTest(unittest.TestCase):
                 }
             ]
         })
-
         result = self.runTest(scenario)
 
-        print json.dumps(result, indent=4, sort_keys=True)
-
+        # Check for results
         self.assertEqual("results", result['type'])
-        self.assertEqual(2, len(result['data']))
+        self.assertEqual(3, len(result['data']))
 
+        # Retrieve data
         data = result['data']
+        action1 = data[0]
+        action2 = data[1]
+        action3 = data[2]
 
         # Check action 1
-        self.assertLess(data[0]['start'], data[0]['end'])
-        self.assertTrue(data[0]['success'])
+        self.assertLess(action1['start'], action1['end'])
+        self.assertTrue(action1['success'])
         self.assertEquals(
-            data[0]['time'],
-            data[0]['end'] - data[0]['start']
+            action1['time'],
+            action1['end'] - action1['start']
         )
-        self.assertEquals('https://felt.sava.be/', data[0]['url'])
-        self.assertEquals('load', data[0]['step']['action'])
-        self.assertEquals('https://felt.sava.be/', data[0]['step']['url'])
+        self.assertEquals('https://felt.sava.be/', action1['url'])
+        self.assertEquals('load', action1['step']['action'])
+        self.assertEquals('https://felt.sava.be/', action1['step']['url'])
 
-        # Check action 2
-        self.assertLess(data[1]['start'], data[1]['end'])
-        self.assertTrue(data[1]['success'])
+        # Check action 3
+        self.assertLess(action3['start'], action3['end'])
+        self.assertTrue(action3['success'])
         self.assertEquals(
-            data[1]['time'],
-            data[1]['end'] - data[1]['start']
+            action3['time'],
+            action3['end'] - action3['start']
         )
         self.assertEquals(
             'https://felt.sava.be/settings.php',
-            data[1]['url']
+            action3['url']
         )
-        self.assertEquals('event', data[1]['step']['action'])
-        self.assertEquals('click', data[1]['step']['type'])
+        self.assertEquals('event', action3['step']['action'])
+        self.assertEquals('click', action3['step']['type'])
         self.assertEquals(
             '#navbar > ul > li:nth-child(2) > a',
-            data[1]['step']['element']
+            action3['step']['element']
         )
+
+    def test_login(self):
+        scenario = Scenario({
+            "variables":[],
+            "steps": [
+                {
+                    "action": "load",
+                    "url": "https://felt.sava.be/"
+                },
+                {
+                    "action": "set",
+                    "attribute": "value",
+                    "selector": "input[name=username]",
+                    "value": "felt"
+                },
+                {
+                    "action": "set",
+                    "attribute": "value",
+                    "selector": "input[name=password]",
+                    "value": "isAWESOME"
+                },
+                {
+                    "action" : "wait",
+                    "time" : {
+                        "min": 1000,
+                        "max": 5000
+                    }
+                },
+                {
+                    "action": "event",
+                    "type": "submit",
+                    "selector": "#loginForm"
+                }
+            ]
+        })
+        result = self.runTest(scenario)
+
+        print result
+
+        # Check for results
+        self.assertEqual("results", result['type'])
+        self.assertEqual(5, len(result['data']))
+
+        # Retrieve data
+        data = result['data']
+        action1 = data[0]
+        action2 = data[1]
+        action3 = data[2]
+        action4 = data[3]
+        action5 = data[4]
 
     def runTest(self, scenario):
         options = Options()
         options.setTest(True)
+        options.setDebug(True)
         init(options)
 
         core = Felt(options, [scenario])
