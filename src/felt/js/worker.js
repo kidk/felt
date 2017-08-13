@@ -193,6 +193,7 @@ function nextAction() {
 
             case 'event':
                 event(current);
+                break;
 
             case 'sleep':
                 sleep(current);
