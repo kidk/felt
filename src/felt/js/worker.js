@@ -184,7 +184,7 @@ function nextAction() {
         // TODO: Instead of sending each individual var, send current
         switch (current.action) {
             case 'load':
-                loadpage(current.url);
+                loadpage(current);
                 break;
 
             case 'set':
@@ -343,9 +343,17 @@ function event(step) {
  *
  * @param  {Array.<string>|string} url The url(s) that will be loaded.
  */
-function loadpage(url) {
-    if (url instanceof Array) {
-        url = url[Math.floor(Math.random() * url.length)];
+function loadpage(current) {
+    var url = '';
+
+    if (!current.url) {
+        error('url key is missing for load step');
+    }
+
+    if (current.url instanceof Array) {
+        url = current.url[Math.floor(Math.random() * current.url.length)];
+    } else {
+        url = current.url;
     }
 
     requestUrl = url;
