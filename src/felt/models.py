@@ -17,7 +17,7 @@ class Options:
     DEFAULT_THREADS = 5
     DEFAULT_VERBOSE = False
     DEFAULT_DEBUG = False
-    DEFAULT_MAXTIME = 0
+    DEFAULT_MAXTIME = 30
     DEFAULT_TEST = False
     DEFAULT_BROWSER = 'phantomjs'
     DEFAULT_SCREENSHOT = False
@@ -113,7 +113,9 @@ class Scenario():
     def preprocessScenario(self):
         """Preprocess the scenario so that the variables are filled in."""
         obj = copy.deepcopy(self._scenario)
-        variables = copy.deepcopy(obj['variables'])
+        variables = []
+        if 'variables' in obj:
+            variables = copy.deepcopy(obj['variables'])
         steps = copy.deepcopy(obj['steps'])
 
         # Loop all variables

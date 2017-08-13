@@ -1,0 +1,30 @@
+---
+
+steps:
+  - action: load
+    url: http://felt.sava.be/
+
+  - action: event
+    type: click
+    on_multiple: random
+    selector: a
+
+  - action: event
+    type: click
+    on_multiple: random
+    selector: a
+
+  - action: event
+    type: click
+    on_multiple: random
+    selector: a
+
+  - action: event
+    type: click
+    on_multiple: random
+    selector: a
+
+  - action: event
+    type: click
+    on_multiple: random
+    selector: a

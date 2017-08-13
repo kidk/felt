@@ -11,7 +11,14 @@ cache:
 
 install:
   - "pip install flake8"
+  - "nvm install 8.1.4"
+  - "nvm use 8.1.4"
+  - "npm i -g eslint"
 
-before_script: "flake8 --ignore=D203 ."
+before_script: 
+  - "flake8 --ignore=D203 --exclude bin/ srv/"
+  - "eslint src/felt/js/**"
 
-script: "python test.py"
+script: 
+  - "python setup.py build"
+  - "python setup.py test"

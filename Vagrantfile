@@ -17,10 +17,6 @@ Vagrant.configure("2") do |config|
         s.inline = "apt-get -y install xvfb firefox unzip python-pip"
     end
 
-    config.vm.provision "install_dependencies_pip", type: "shell" do |s|
-        s.inline = "pip install commentjson"
-    end
-
     config.vm.provision "install_phantomjs", type: "shell" do |s|
         s.inline = "wget -nv https://bitbucket.org/ariya/phantomjs/downloads/" + phantomjs + ".tar.bz2 && tar jvxf " + phantomjs + ".tar.bz2 && rm " + phantomjs + ".tar.bz2 && chown -R vagrant:vagrant " + phantomjs
     end

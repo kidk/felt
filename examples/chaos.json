@@ -2,27 +2,37 @@
     "variables":[],
     "steps": [
         {
-            "action": "open_url",
-            "value": "http://felt.sava.be/"
+            "action": "load",
+            "url": "http://felt.sava.be/"
         },
         {
-            "action": "click_one",
+            "action": "event",
+            "type": "click",
+            "on_multiple": "random",
             "selector": "a"
         },
         {
-            "action": "click_one",
+            "action": "event",
+            "type": "click",
+            "on_multiple": "random",
             "selector": "a"
         },
         {
-            "action": "click_one",
+            "action": "event",
+            "type": "click",
+            "on_multiple": "random",
             "selector": "a"
         },
         {
-            "action": "click_one",
+            "action": "event",
+            "type": "click",
+            "on_multiple": "random",
             "selector": "a"
         },
         {
-            "action": "click_one",
+            "action": "event",
+            "type": "click",
+            "on_multiple": "random",
             "selector": "a"
         }
     ]

@@ -1,5 +1,6 @@
 import unittest
-from models import Scenario
+
+from felt.models import Scenario, Options
 
 
 class ScenarioParserTest(unittest.TestCase):

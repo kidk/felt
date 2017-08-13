@@ -1,0 +1,12 @@
+---
+
+steps:
+  - action: load
+    url: http://felt.sava.be/
+    
+  - action: event
+    type: click
+    element: "#navbar > ul > li:nth-child(2) > a"
+
+  - action: load
+    url: http://felt.sava.be/login.php

@@ -32,6 +32,23 @@ var requests = 0;
 var results = [];
 
 /**
+ * Add result function
+ * This function is used to add a result to the results array, it will also
+ * check the success and exit on failure.
+ *
+ * @return {boolean}
+ */
+function addResult(result) {
+    // Push to array
+    results.push(result);
+
+    // Check result
+    if (!result.success) {
+        exit(1);
+    }
+}
+
+/**
  * The requested page url.
  *
  * @type {string}
@@ -128,12 +145,16 @@ var exited = false;
 /**
  * Exit functionality.
  */
-function exit() {
+function exit(code) {
+    if (code === undefined) {
+        code = 0;
+    }
+
     if (!exited) {
         exited = true;
-        log("results", results);
+        log('results', results);
 
-        phantom.exit(0);
+        phantom.exit(code);
     }
 }
 
@@ -156,31 +177,26 @@ function nextAction() {
         if (!current) {
             exit();
         }
+
         output(JSON.stringify(current));
         var actionSuccess = true;
+
+        // TODO: Instead of sending each individual var, send current
         switch (current.action) {
-            case 'open_url':
-                loadpage(current.value);
+            case 'load':
+                loadpage(current);
                 break;
 
-            case 'set_value':
-                set_value(current.selector, current.value);
+            case 'set':
+                set(current);
                 break;
 
-            case 'submit':
-                submit(current.selector);
-                break;
-
-            case 'click':
-                click(current.selector);
-                break;
-
-            case 'click_one':
-                click_one(current.selector);
+            case 'event':
+                event(current);
                 break;
 
             case 'sleep':
-                sleep(current.value);
+                sleep(current);
                 break;
 
             case 'wait_for_element':
@@ -215,6 +231,8 @@ function nextAction() {
             action++;
         }
     }
+
+    // Wait for previous command to finish
     setTimeout(function() {
         nextAction();
     }, 200);
@@ -226,119 +244,124 @@ function nextAction() {
  * @param {string} value    The value, when multiple values are available, one
  * is chosen at random.
  */
-function set_value(selector, value) {
+function set(current) {
     // Randomly set a value between two values
-    if (value instanceof Array) {
-        value = value[Math.floor(Math.random() * value.length)];
-        output("Using value for set_value: " + value);
+    if (current.value instanceof Array) {
+        value = current.value[Math.floor(Math.random() * current.value.length)];
+        output('Using value for set_value: ' + value);
+    } else {
+        value = current.value;
     }
 
-    page.evaluate(function(selector, value) {
-        qselector = document.querySelector(selector);
-        qselector.value = value;
+    var result = page.evaluate(function(current, value) {
+        selector = document.querySelector(current.selector);
+        if (!selector) {
+            return {
+                'message': 'Element not found',
+                'success': false
+            };
+        }
+        selector[current.attribute] = value;
 
         // Manually dispatch events for front-end frameworks like Angular2
         var eventType;
-        switch(qselector.tagName) {
-            case "INPUT":
-                eventType = "input";
+        switch(selector.tagName) {
+            case 'INPUT':
+                eventType = 'input';
                 break;
             default:
-                eventType = "change";
+                eventType = 'change';
                 break;
         }
 
-        var event = document.createEvent("UIEvent");
+        var event = document.createEvent('UIEvent');
         event.initUIEvent(eventType, true, true, window, 0);
-        qselector.dispatchEvent(event);
-    }, selector, value);
+        selector.dispatchEvent(event);
+
+        return {
+            'message': current.attribute + ' has been set to ' + value + ' on ' + current.selector,
+            'success': true
+        };
+    }, current, value);
+
+    addResult({
+        'action': 'set',
+        'message': result.message,
+        'success': result.success,
+        'step': JSON.stringify(current).replace(new RegExp('"', 'g'), '"')
+    });
 }
 
 /**
- * Submit form.
+ * Event
  *
  * @param  {string} selector The selector.
+ * @param  {string} type The type of event that should be triggerd on the selector.
  */
-function submit(selector) {
-    page.evaluate(function(selector) {
-        document.querySelector(selector).submit();
-    }, selector);
-}
-
-/**
- * Click element.
- *
- * @param  {string} selector The selector.
- */
-function click(selector) {
-    var returnedValue = page.evaluate(function(selector) {
+function event(step) {
+    var returnedValue = page.evaluate(function(step) {
         var message = '';
-        var elements = document.querySelectorAll(selector);
+        var success = true;
+        
+        switch(step.type) {
+            case 'submit':
+                document.querySelector(step.selector).submit();
+            break;
+            case 'click':
+                /**
+                 * Click element helper.
+                 *
+                 * @param  {string} element The element that will be clicked.
+                 */
+                function click_element(element) {
+                    // TODO: click on an <a> element is not supported in all browsers by default.
+                    // find a more clean solution.
+                    if (typeof element.click === 'function') {
+                        element.click();
+                    } else if (element.fireEvent) {
+                        return element.fireEvent('onclick');
+                    } else {
+                        var evObj = document.createEvent('Events');
+                        evObj.initEvent('click', true, false);
+                        element.dispatchEvent(evObj);
+                    }
+                }
 
-        /**
-         * Click element helper.
-         *
-         * @param  {string} element The element that will be clicked.
-         */
-        function click_element(element) {
-            // TODO: click on an <a> element is not supported in all browsers by default.
-            // find a more clean solution.
-            if (typeof element.click === 'function') {
-                element.click();
-            } else if (element.fireEvent) {
-                return element.fireEvent('onclick');
-            } else {
-                var evObj = document.createEvent('Events');
-                evObj.initEvent('click', true, false);
-                element.dispatchEvent(evObj);
-            }
+                var elements = document.querySelectorAll(step.element);
+                if (elements !== null && elements.length === 1) {
+                    click_element(elements[0]);
+                } else if (elements !== null && elements.length > 1) {
+                    if (step.on_multiple && step.on_multiple == 'random') {
+                        message = 'Selector ' + step.element + ' matches more than 1 element, clicking a random element.';
+                        click_element(elements[Math.floor(Math.random() * elements.length)]);
+                    } else {
+                        message = 'Selector ' + step.element + ' matches more than 1 element, clicking first element.';
+                        click_element(elements[0]);
+                    }
+                } else {
+                    success = false;
+                    message = 'Selector ' + step.element + ' does not match any element in the dom';
+                }
+            break;
+            default:
+
+            break;
         }
 
-        if (elements !== null && elements.length === 1) {
-            click_element(elements[0]);
-        } else if (elements !== null && elements.length > 1) {
-            message = 'Selector ' + selector + ' matches more than 1 element, clicking the first element.';
-            click_element(elements[0]);
-        } else {
-            message = 'Selector ' + selector + ' does not match any element in the dom';
-        }
+        return {
+            'message': message,
+            'success': success
+        };
+    }, step);
 
-        return message;
-    }, selector);
-
-    if (returnedValue !== '') {
-        warn({
-            'source': 'click',
-            'message': returnedValue
-        });
-    }
-}
-
-/**
- * Clicks a random element in the list.
- *
- * @param  {string} selector The selector.
- */
-function click_one(selector) {
-    var returnedValue = page.evaluate(function(selector) {
-        elements = document.querySelectorAll(selector);
-        var message = '';
-        if (elements === null || elements.length === 0) {
-            message = 'Selector ' + selector + ' does not match any element in the dom';
-        } else {
-            element = elements[Math.floor(Math.random() * elements.length)];
-            element.click();
-        }
-
-        return message;
-    }, selector);
-
-    if (returnedValue !== '') {
-        warn({
-            'source': 'click_one',
-            'message': returnedValue
-        });
-    }
+    addResult({
+        'action': 'event',
+        'type': step.type,
+        'message': returnedValue.message,
+        'success': returnedValue.success,
+        'selector': step.selector,
+        'step': JSON.stringify(current).replace(new RegExp('"', 'g'), '"')
+    });
 }
 
 /**
@@ -346,9 +369,17 @@ function click_one(selector) {
  *
  * @param  {Array.<string>|string} url The url(s) that will be loaded.
  */
-function loadpage(url) {
-    if (url instanceof Array) {
-        url = url[Math.floor(Math.random() * url.length)];
+function loadpage(current) {
+    var url = '';
+
+    if (!current.url) {
+        error('url key is missing for load step');
+    }
+
+    if (current.url instanceof Array) {
+        url = current.url[Math.floor(Math.random() * current.url.length)];
+    } else {
+        url = current.url;
     }
 
     requestUrl = url;
@@ -372,6 +403,14 @@ function wait_for_element(selector) {
             return false;
         }
     }, selector);
+
+    addResult({
+        'type': 'wait_for_element',
+        'success': found,
+        'selector': selector,
+        'step': JSON.stringify(current).replace(new RegExp('"', 'g'), '"')
+    });
+
     return found;
 }
 
@@ -380,18 +419,32 @@ function wait_for_element(selector) {
  *
  * @param  {number} value value of sleep in ms.
  */
-function sleep(value) {
+function sleep(current) {
     // Randomly select a sleep time between two values
-    if (value instanceof Object) {
-        var min = value.min;
-        var max = value.max;
+    if (current.time instanceof Object) {
+        var min = current.time.min;
+        var max = current.time.max;
         value = Math.floor(Math.random() * (max - min) ) + min;
+    } else {
+        value = current.time;
     }
 
     pageReady = false;
+    output({
+        'source': 'sleep',
+        'message': 'Waiting for ' + value + ' seconds.'
+    });
+    
     setTimeout(function() {
         pageReady = true;
     }, value);
+
+    addResult({
+        'type': 'sleep',
+        'success': true,
+        'time': value,
+        'step': JSON.stringify(current).replace(new RegExp('"', 'g'), '"')
+    });
 }
 
 /**
@@ -409,13 +462,13 @@ function check_element_exists(current, checker) {
             return false;
         }
 
-        if (typeof checker !== "function") {
+        if (typeof checker !== 'function') {
             return true;
         }
 
         // Do other checks if are set.
         for (i = 0; i < elements.length; ++i) {
-            var found = checker(elements[i], current)
+            var found = checker(elements[i], current);
             if (found === true) {
                 return true;
             }
@@ -425,8 +478,8 @@ function check_element_exists(current, checker) {
 
     }, current, checker);
 
-    results.push({
-        'type': "check_element_exists",
+    addResult({
+        'type': 'check_element_exists',
         'success': found,
         'url': requestUrl,
         'step': JSON.stringify(current).replace(new RegExp('"', 'g'), '"')
@@ -444,7 +497,7 @@ function check_element_exists(current, checker) {
  */
 function contains_text(element, current) {
     var textProperty = 'textContent' in document ? 'textContent' : 'innerText';
-    return element[textProperty].indexOf(current.value) > -1
+    return element[textProperty].indexOf(current.value) > -1;
 }
 
 /**
@@ -466,10 +519,10 @@ nextAction();
  */
 function log(type, message) {
     console.log(JSON.stringify({
-        "type": type,
-        "uid": pad(uid),
-        "timestamp": Date.now(),
-        "data": message
+        'type': type,
+        'uid': pad(uid),
+        'timestamp': Date.now(),
+        'data': message
     }));
 }
 
@@ -513,7 +566,8 @@ function warn(message) {
  */
 function error(message) {
     if (options['verbose']) {
-        log('error', message)
+        log('error', message);
+        exit(1);
     }
 }
 
@@ -543,7 +597,7 @@ function pad(num, size) {
  */
 page.onError = function(msg, trace) {
     error({
-        'source': "onError",
+        'source': 'onError',
         'message': msg,
         'trace': trace
     });
@@ -556,7 +610,7 @@ page.onError = function(msg, trace) {
  */
 page.onResourceRequested = function(requestData, networkRequest) {
     debug({
-        'source': "onResourceRequested",
+        'source': 'onResourceRequested',
         'requestData': requestData,
         'networkRequest': networkRequest
     });
@@ -654,7 +708,7 @@ page.onInitialized = function() {
     debug({
         'source': 'onInitialized',
         'requestUrl': requestUrl
-    })
+    });
 
     // Increase requests
     requests += 1;
@@ -681,8 +735,8 @@ page.onLoadFinished = function(status) {
 
     pageReady = true;
     if (status !== 'success') {
-        results.push({
-            'type': "onLoadFinished",
+        addResult({
+            'type': 'onLoadFinished',
             'url': requestUrl,
             'success': false,
             'step': JSON.stringify(scenario[action - 1]).replace(new RegExp('"', 'g'), '"')
@@ -693,8 +747,8 @@ page.onLoadFinished = function(status) {
         // Only save results when we know a page was requested, onLoadFinished gets called a lot more then needed
         if (pageInitializetime > 0) {
             var pageLoadFinishTime = Date.now();
-            results.push({
-                'type': "onLoadFinished",
+            addResult({
+                'type': 'onLoadFinished',
                 'url': requestUrl,
                 'success': true,
                 'start': pageInitializetime,
@@ -716,7 +770,7 @@ page.onPageCreated = function(newPage) {
     newPage.onLoadFinished = function(){
         page = newPage;
     };
-}
+};
 
 /**
  * This is for printing any logs or errors that may have happened in the page.evaluate function.
@@ -727,5 +781,5 @@ page.onConsoleMessage = function(msg) {
     debug({
         'source': 'onConsoleMessage',
         'message': msg
-    })
+    });
 };
