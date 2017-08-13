@@ -253,8 +253,14 @@ function set(current) {
         value = current.value;
     }
 
-    page.evaluate(function(current, value) {
+    var result = page.evaluate(function(current, value) {
         selector = document.querySelector(current.selector);
+        if (!selector) {
+            return {
+                'message': 'Element not found',
+                'success': false
+            };
+        }
         selector[current.attribute] = value;
 
         // Manually dispatch events for front-end frameworks like Angular2
@@ -271,7 +277,19 @@ function set(current) {
         var event = document.createEvent('UIEvent');
         event.initUIEvent(eventType, true, true, window, 0);
         selector.dispatchEvent(event);
+
+        return {
+            'message': current.attribute + ' has been set to ' + value + ' on ' + current.selector,
+            'success': true
+        };
     }, current, value);
+
+    addResult({
+        'action': 'set',
+        'message': result.message,
+        'success': result.success,
+        'step': JSON.stringify(current).replace(new RegExp('"', 'g'), '"')
+    });
 }
 
 /**
@@ -283,7 +301,8 @@ function set(current) {
 function event(step) {
     var returnedValue = page.evaluate(function(step) {
         var message = '';
-
+        var success = true;
+        
         switch(step.type) {
             case 'submit':
                 document.querySelector(step.selector).submit();
@@ -320,6 +339,7 @@ function event(step) {
                         click_element(elements[0]);
                     }
                 } else {
+                    success = false;
                     message = 'Selector ' + step.element + ' does not match any element in the dom';
                 }
             break;
@@ -328,14 +348,20 @@ function event(step) {
             break;
         }
 
+        return {
+            'message': message,
+            'success': success
+        };
     }, step);
 
-    if (returnedValue !== '') {
-        warn({
-            'source': 'click',
-            'message': returnedValue
-        });
-    }
+    addResult({
+        'action': 'event',
+        'type': step.type,
+        'message': returnedValue.message,
+        'success': returnedValue.success,
+        'selector': step.selector,
+        'step': JSON.stringify(current).replace(new RegExp('"', 'g'), '"')
+    });
 }
 
 /**
@@ -377,6 +403,14 @@ function wait_for_element(selector) {
             return false;
         }
     }, selector);
+
+    addResult({
+        'type': 'wait_for_element',
+        'success': found,
+        'selector': selector,
+        'step': JSON.stringify(current).replace(new RegExp('"', 'g'), '"')
+    });
+
     return found;
 }
 
@@ -400,9 +434,17 @@ function sleep(current) {
         'source': 'sleep',
         'message': 'Waiting for ' + value + ' seconds.'
     });
+    
     setTimeout(function() {
         pageReady = true;
     }, value);
+
+    addResult({
+        'type': 'sleep',
+        'success': true,
+        'time': value,
+        'step': JSON.stringify(current).replace(new RegExp('"', 'g'), '"')
+    });
 }
 
 /**
@@ -525,6 +567,7 @@ function warn(message) {
 function error(message) {
     if (options['verbose']) {
         log('error', message);
+        exit(1);
     }
 }
 
