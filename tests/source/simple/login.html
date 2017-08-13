@@ -1,0 +1,18 @@
+<script type="text/javascript">
+var GET = {};
+
+document.location.search.replace(/\??(?:([^=]+)=([^&]*)&?)/g, function () {
+    function decode(s) {
+        return decodeURIComponent(s.split("+").join(" "));
+    }
+
+    GET[decode(arguments[1])] = decode(arguments[2]);
+});
+
+if (GET['username'] == 'felt' && GET['password'] == 'isAWESOME') {
+    console.log('done');
+} else {
+    // similar behavior as an HTTP redirect
+    window.location.replace(".");
+}
+</script>
