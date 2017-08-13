@@ -6,7 +6,7 @@ Handles input parsing, checking parameters and starting the workload run.
 
 import argparse
 import os
-import commentjson
+import json
 import yaml
 from models import Scenario, Options
 from core import Felt
@@ -126,7 +126,7 @@ def readFile(file):
 def loadJSONScenario(file):
     content = readFile(file)
 
-    scenarioData = commentjson.loads(content)
+    scenarioData = json.loads(content)
     return Scenario(scenarioData)
 
 def loadYAMLscenario(file):
