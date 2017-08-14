@@ -5,7 +5,6 @@ from felt.core import Felt
 from felt.models import Scenario, Options
 from felt.init import init
 
-
 class ScenarioParserTest(unittest.TestCase):
 
     def test_click(self):
@@ -14,7 +13,7 @@ class ScenarioParserTest(unittest.TestCase):
             "steps": [
                 {
                     "action": "load",
-                    "url": "https://felt.sava.be/"
+                    "url": "http://localhost:5555/simple/"
                 },
                 {
                     "action": "event",
@@ -42,9 +41,9 @@ class ScenarioParserTest(unittest.TestCase):
             action1['time'],
             action1['end'] - action1['start']
         )
-        self.assertEquals('https://felt.sava.be/', action1['url'])
+        self.assertEquals('http://localhost:5555/simple/', action1['url'])
         self.assertEquals('load', action1['step']['action'])
-        self.assertEquals('https://felt.sava.be/', action1['step']['url'])
+        self.assertEquals('http://localhost:5555/simple/', action1['step']['url'])
 
         # Check action 3
         self.assertLess(action3['start'], action3['end'])
@@ -54,7 +53,7 @@ class ScenarioParserTest(unittest.TestCase):
             action3['end'] - action3['start']
         )
         self.assertEquals(
-            'https://felt.sava.be/settings.php',
+            'http://localhost:5555/simple/settings.php',
             action3['url']
         )
         self.assertEquals('event', action3['step']['action'])
@@ -70,7 +69,7 @@ class ScenarioParserTest(unittest.TestCase):
             "steps": [
                 {
                     "action": "load",
-                    "url": "https://felt.sava.be/"
+                    "url": "http://localhost:5555/simple/"
                 },
                 {
                     "action": "set",
