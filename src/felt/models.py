@@ -17,7 +17,7 @@ class Options:
     DEFAULT_THREADS = 5
     DEFAULT_VERBOSE = False
     DEFAULT_DEBUG = False
-    DEFAULT_MAXTIME = 30
+    DEFAULT_MAXTIME = 0
     DEFAULT_TEST = False
     DEFAULT_BROWSER = 'phantomjs'
     DEFAULT_SCREENSHOT = False

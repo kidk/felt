@@ -49,7 +49,7 @@ class Felt:
         def watchdog(sec):
             """ Stops the process after x seconds."""
             time.sleep(sec)
-            os._exit(0)
+            sys.exit(0)
 
         Thread(
             target=watchdog,
@@ -180,6 +180,7 @@ class WebworkerService:
                 threadQueue.put("Something")
                 break
 
+        # TODO: Handle this returncode 
         print("Returncode: %s" % process.returncode)
 
         return None
