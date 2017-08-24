@@ -16,7 +16,7 @@ install:
   - "npm i -g eslint"
 
 before_script: 
-  - "flake8 --ignore=D203 --exclude bin/ srv/"
+  - "flake8 ."
   - "eslint src/felt/js/**"
 
 script: 
