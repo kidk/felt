@@ -7,7 +7,8 @@ import zipfile
 import tarfile
 import stat
 import os
-from appdirs import *
+from appdirs import user_data_dir
+
 
 def init(options):
     """Init function.

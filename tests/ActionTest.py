@@ -1,9 +1,9 @@
 import unittest
-import json
 
 from felt.core import Felt
 from felt.models import Scenario, Options
 from felt.init import init
+
 
 class ScenarioParserTest(unittest.TestCase):
 
@@ -43,7 +43,10 @@ class ScenarioParserTest(unittest.TestCase):
         )
         self.assertEquals('http://localhost:5555/simple/', action1['url'])
         self.assertEquals('load', action1['step']['action'])
-        self.assertEquals('http://localhost:5555/simple/', action1['step']['url'])
+        self.assertEquals(
+            'http://localhost:5555/simple/',
+            action1['step']['url']
+        )
 
         # Check action 3
         self.assertLess(action3['start'], action3['end'])
@@ -65,7 +68,7 @@ class ScenarioParserTest(unittest.TestCase):
 
     def test_login(self):
         scenario = Scenario({
-            "variables":[],
+            "variables": [],
             "steps": [
                 {
                     "action": "load",
@@ -84,8 +87,8 @@ class ScenarioParserTest(unittest.TestCase):
                     "value": "isAWESOME"
                 },
                 {
-                    "action" : "wait",
-                    "time" : {
+                    "action": "wait",
+                    "time": {
                         "min": 1000,
                         "max": 5000
                     }

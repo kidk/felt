@@ -148,11 +148,16 @@ class WebworkerService:
     @staticmethod
     def execute(threadId, scenario, options):
         """Execute browser thread with options."""
-        
+
         # Prepare command statement
+        pathJs = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'js/worker.js'
+        )
+
         command = [
             options.getBrowserPath(),
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'js/worker.js'),
+            pathJs,
             str(threadId),
             json.dumps(scenario.preprocessScenario()),
             json.dumps(options.getRunnerOptions())
@@ -180,7 +185,7 @@ class WebworkerService:
                 threadQueue.put("Something")
                 break
 
-        # TODO: Handle this returncode 
+        # TODO: Handle this returncode
         print("Returncode: %s" % process.returncode)
 
         return None

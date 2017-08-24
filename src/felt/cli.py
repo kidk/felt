@@ -123,11 +123,13 @@ def readFile(file):
 
     return content
 
+
 def loadJSONScenario(file):
     content = readFile(file)
 
     scenarioData = json.loads(content)
     return Scenario(scenarioData)
+
 
 def loadYAMLscenario(file):
     content = readFile(file)

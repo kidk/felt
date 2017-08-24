@@ -12,18 +12,24 @@ handler = None
 active = True
 thread = None
 
+
 def pytest_sessionstart(session):
     global handler, thread
 
     print("Starting local webserver on port %s" % port)
     os.chdir('tests/source')
-    handler = SocketServer.TCPServer(("", port), SimpleHTTPServer.SimpleHTTPRequestHandler)
-    thread = threading.Thread(target = loop)
+    handler = SocketServer.TCPServer(
+        ("", port),
+        SimpleHTTPServer.SimpleHTTPRequestHandler
+    )
+    thread = threading.Thread(target=loop)
     thread.start()
+
 
 def loop():
     while (active):
         handler.handle_request()
+
 
 def pytest_sessionfinish(session, exitstatus):
     global active
