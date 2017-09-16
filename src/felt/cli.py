@@ -8,9 +8,9 @@ import argparse
 import os
 import json
 import yaml
-from models import Scenario, Options
-from core import Felt
-from init import init
+from felt.models import Scenario, Options
+from felt.core import Felt
+from felt.init import init
 
 __license__ = "MIT"
 __maintainer__ = "Samuel Vandamme"

@@ -26,9 +26,9 @@ __version__ = "alpha"
 class Felt:
     """Felt class."""
 
-    def __init__(self, options, scenario):
+    def __init__(self, options, scenarios):
         """Init vars."""
-        self.scenario = scenario
+        self.scenarios = scenarios
         self.options = options
 
     def run(self):
@@ -42,7 +42,7 @@ class Felt:
             self.initWatchdog()
 
         worker = WebworkerService()
-        return worker.run(self.scenario, self.options)
+        return worker.run(self.options, self.scenarios)
 
     def initWatchdog(self):
         """Init watchdog and kill thread after x seconds."""
@@ -65,7 +65,7 @@ dataQueue = Queue()
 class WebworkerService:
     """WebworkerService class."""
 
-    def run(self, scenarios, options):
+    def run(self, options, scenarios):
         """Run function.
 
         Init run of main workload loop
@@ -99,7 +99,6 @@ class WebworkerService:
         try:
             while True:
                 rawData = dataQueue.get(False)
-
                 if rawData.strip() == '':
                     continue
 
@@ -120,7 +119,7 @@ class WebworkerService:
                 raise ValueError("Unable to parse data coming from worker")
 
         if options.isDebug():
-            print json.dumps(data, indent=4, sort_keys=True)
+            print(json.dumps(data, indent=4, sort_keys=True))
 
         return data
 
