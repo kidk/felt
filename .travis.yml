@@ -11,11 +11,6 @@ env:
     - secure: "Lglsk9+xz6YHLnfIeqAhD75hhMDp4Fx5ssFN8nrUIqLsyH3aGkaOTqLs560wjQaK+wOT1bVrt1FUSasiisE/8xDBtSAdr8qOqdPmWSHziFKjUdvJIr+q96/fAL8Wx9P414QJUT48M84YdhNRSl0HaF51hJgaC/G2MkJYUxO2P7L/TxNDvEgzU6ViwELH5jRJEzpsXHZHHBclq7owsIZsko9jN+L07vqqQSo9RD9Uc9zrs+BBc1Dvk/mlBU6asrv+OkL8T6ThayvYwqTBtkXM5cW4sw67SLsrRAR4rwDjeFkx+mclANfy9DDQiinKy82HqMDP+XD+fLaD6vEIxKGacjHzPZOwzwND+Am6zVeNRxJpkhnZyDe6VvTKMhpoODklKY5isV/HAc1j5wy9wtEuWi8vGR7M9yYWH7OXBsuvM4+oaxztqo6FpzZ1inFb4eehxxpc+BSzt2kHiuJpQ/13PFaCHd94x0AoQeqnaS3hkIckzhW60dZlbSuJ9SViyEkha8CcxGygtg8hdurlT18e8a5SOAWSIqHInrxA7rChplK+vd9D6TSsqEdshOaHBt+arg/A55NpOSlD230tcP0e+anaJ/xL1BOC5JFT6ZAvkL2oSAJ6I+JUsI320DoRV0UZjo7udbJw5UIPm9nOj2KhgyNVKwRjwCcCWqPQoe19fsY="
     - COMMIT=${TRAVIS_COMMIT::8}
 
-addons:
-  apt:
-    packages:
-      - docker-ce
-
 cache:
   directories:
     - "bin"
@@ -34,13 +29,15 @@ script:
   - "python setup.py build"
   - "python setup.py test"
 
-
 jobs:
   include:
     - stage: docker
       python: 3.6
       services:
       - docker
+      before_install:
+      - sudo apt-get update
+      - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
       script:
       - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - export REPO=kidk/felt
