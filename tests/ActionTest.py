@@ -102,7 +102,7 @@ class ScenarioParserTest(unittest.TestCase):
         })
         result = self.runTest(scenario)
 
-        print result
+        print(result)
 
         # Check for results
         self.assertEqual("results", result['type'])
