@@ -1,26 +1,29 @@
-import SocketServer
-import SimpleHTTPServer
+try:
+    import socketserver
+    from urllib import request
+    from http import server
+except ImportError:
+    import SocketServer as socketserver
+    import urllib2 as request
+    import SimpleHTTPServer as server
+
 import threading
 import os
-try:
-    import urllib2
-except ImportError:
-    import urllib.request
+
 
 port = 5555
 handler = None
 active = True
 thread = None
 
-
 def pytest_sessionstart(session):
     global handler, thread
 
     print("Starting local webserver on port %s" % port)
     os.chdir('tests/source')
-    handler = SocketServer.TCPServer(
+    handler = socketserver.TCPServer(
         ("", port),
-        SimpleHTTPServer.SimpleHTTPRequestHandler
+        server.SimpleHTTPRequestHandler
     )
     thread = threading.Thread(target=loop)
     thread.start()
@@ -39,10 +42,7 @@ def pytest_sessionfinish(session, exitstatus):
 
     # Ping webserver to close
     print("Sending last request to stop webserver")
-    if urllib2:
-        urllib2.urlopen("http://localhost:%s" % port).read()
-    else:
-        urllib.request.urlopen("http://localhost:%s" % port).read()
+    request.urlopen("http://localhost:%s" % port).read()
 
     # Wait for it to finish
     print("\nWaiting for webserver thread to end\n")
