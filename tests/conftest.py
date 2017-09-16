@@ -16,6 +16,7 @@ handler = None
 active = True
 thread = None
 
+
 def pytest_sessionstart(session):
     global handler, thread
 
