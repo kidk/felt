@@ -1,4 +1,9 @@
 language: python
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
 
 env:
   global:
@@ -13,11 +18,6 @@ cache:
 jobs:
   include:
     - stage: codequality
-      python:
-      - "2.7"
-      - "3.3"
-      - "3.4"
-      - "3.5"
       install:
       - "pip install flake8"
       - "nvm install 8.1.4"
@@ -27,17 +27,10 @@ jobs:
       - "flake8 ."
       - "eslint src/felt/js/**"
     - stage: testing
-      python:
-      - "2.7"
-      - "3.3"
-      - "3.4"
-      - "3.5"
       script:
       - "python setup.py build"
       - "python setup.py test"
     - stage: docker
-      python:
-      - "3.5"
       script:
       - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - export REPO=kidk/felt
