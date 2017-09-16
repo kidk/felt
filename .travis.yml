@@ -5,6 +5,12 @@ python:
   - "3.4"
   - "3.5"
 
+env:
+  global:
+    - secure: "bVmx1X1ngsMaR3FvVcjkYp0TZQHlahpP3IZ5UV7F8XEi93KoGMR7kRKeG5hBJcUmEnpmZ1RX/4tvqGVesTlcUY1cWufacBFsb5ZkmfFqJOoztNR2Fio1X3RJjavoM4RgfWCoCutD4TUBwkNUFSHJ2oNGCfZlUHaMOwkfyjoQecC1/812KmgWU+yG+p91mQhZrh4vPa3jnkcguh4+ei7C5azUDm8hflkElfWa+HAuGYYtOo2DwnNkqlNlFZnIF/pZJM8vHEcVB1piGlYhZjJa1QhnGqI34dxYbt1MI2ujJACKwX241q+6A0V8hHaXzfDi3k4RTsOrPgnmk50gQcotYx7Msy3nmPWtgqFBVS7AWruirhE6arDEFH/tFBGDOBXYVXmFjjTxptuBn++sSNaoOFjL5Hiy2VXxRB+NJLn/+QqQG/19GwEMQ0krZYJESp65Vn6jPRPk8yFbiTXN3+T3asXxdYAxe6SmHtf++lne+Ucz7Vs1l2Nnmof7u2HwPMZZQdW1ri9b/pKUCsngZOnpPKmy08wQAOQRgkp4wLsL1CA6SNCzNBAHSN6xdFGA3fn22wNGuB53oqNIIB4dHzV2FMqar209brYpN3SWz67LIA3Avsgx0gsqfft+v5fzSpPEaKPyOM/w2YaCJyEJhNCPb2irI/daCM2R/qWdU4RhenI="
+    - secure: "Lglsk9+xz6YHLnfIeqAhD75hhMDp4Fx5ssFN8nrUIqLsyH3aGkaOTqLs560wjQaK+wOT1bVrt1FUSasiisE/8xDBtSAdr8qOqdPmWSHziFKjUdvJIr+q96/fAL8Wx9P414QJUT48M84YdhNRSl0HaF51hJgaC/G2MkJYUxO2P7L/TxNDvEgzU6ViwELH5jRJEzpsXHZHHBclq7owsIZsko9jN+L07vqqQSo9RD9Uc9zrs+BBc1Dvk/mlBU6asrv+OkL8T6ThayvYwqTBtkXM5cW4sw67SLsrRAR4rwDjeFkx+mclANfy9DDQiinKy82HqMDP+XD+fLaD6vEIxKGacjHzPZOwzwND+Am6zVeNRxJpkhnZyDe6VvTKMhpoODklKY5isV/HAc1j5wy9wtEuWi8vGR7M9yYWH7OXBsuvM4+oaxztqo6FpzZ1inFb4eehxxpc+BSzt2kHiuJpQ/13PFaCHd94x0AoQeqnaS3hkIckzhW60dZlbSuJ9SViyEkha8CcxGygtg8hdurlT18e8a5SOAWSIqHInrxA7rChplK+vd9D6TSsqEdshOaHBt+arg/A55NpOSlD230tcP0e+anaJ/xL1BOC5JFT6ZAvkL2oSAJ6I+JUsI320DoRV0UZjo7udbJw5UIPm9nOj2KhgyNVKwRjwCcCWqPQoe19fsY="
+    - COMMIT=${TRAVIS_COMMIT::8}
+    
 cache:
   directories:
     - "bin"
@@ -15,10 +21,22 @@ install:
   - "nvm use 8.1.4"
   - "npm i -g eslint"
 
-before_script: 
-  - "flake8 ."
-  - "eslint src/felt/js/**"
-
-script: 
-  - "python setup.py build"
-  - "python setup.py test"
+jobs:
+  include:
+    - stage: codequality
+      script: 
+      - "flake8 ."
+      - "eslint src/felt/js/**"
+    - stage: testing
+      script:
+      - "python setup.py build"
+      - "python setup.py test"
+    - stage: docker
+      script:
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - export REPO=kidk/felt
+      - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+      - docker build -f Dockerfile -t $REPO:$COMMIT .
+      - docker tag $REPO:$COMMIT $REPO:$TAG
+      - docker push $REPO
+  
