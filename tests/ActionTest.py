@@ -31,7 +31,7 @@ class ScenarioParserTest(unittest.TestCase):
         # Retrieve data
         data = result['data']
         action1 = data[0]
-        action2 = data[1]
+        # action2 = data[1]
         action3 = data[2]
 
         # Check action 1
@@ -109,12 +109,12 @@ class ScenarioParserTest(unittest.TestCase):
         self.assertEqual(5, len(result['data']))
 
         # Retrieve data
-        data = result['data']
-        action1 = data[0]
-        action2 = data[1]
-        action3 = data[2]
-        action4 = data[3]
-        action5 = data[4]
+        # data = result['data']
+        # action1 = data[0]
+        # action2 = data[1]
+        # action3 = data[2]
+        # action4 = data[3]
+        # action5 = data[4]
 
     def runTest(self, scenario):
         options = Options()
