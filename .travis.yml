@@ -33,7 +33,9 @@ script:
 jobs:
   include:
     - stage: docker
-      python: 3.5
+      python: 3.6
+      services:
+      - docker
       script:
       - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - export REPO=kidk/felt
