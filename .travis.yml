@@ -15,22 +15,25 @@ cache:
   directories:
     - "bin"
 
+install:
+  - "pip install flake8"
+  - "nvm install 8.1.4"
+  - "nvm use 8.1.4"
+  - "npm i -g eslint"
+
+before_script: 
+  - "flake8 ."
+  - "eslint src/felt/js/**"
+
+script: 
+  - "python setup.py build"
+  - "python setup.py test"
+
+
 jobs:
   include:
-    - stage: codequality
-      install:
-      - "pip install flake8"
-      - "nvm install 8.1.4"
-      - "nvm use 8.1.4"
-      - "npm i -g eslint"
-      script: 
-      - "flake8 ."
-      - "eslint src/felt/js/**"
-    - stage: testing
-      script:
-      - "python setup.py build"
-      - "python setup.py test"
     - stage: docker
+      python: 3.5
       script:
       - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - export REPO=kidk/felt
