@@ -1,4 +1,4 @@
-FROM python:3 as python-base
+FROM library/python:3 as python-base
 
 COPY . /felt/
 WORKDIR "/felt/"
